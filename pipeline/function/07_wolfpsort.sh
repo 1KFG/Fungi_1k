@@ -38,7 +38,7 @@ echo "running $START - $END"
 
 runwolfsort() {
 	INFILE=$1
-	NAME=$(basename $INFILE _proteins_2021-08-30.fasta)
+	NAME=$(basename $INFILE .fasta)
 	echo "$NAME"
 	if [ ! -f $OUTDIR/${NAME}.wolfpsort.results.txt.gz ]; then
 		cat $INDIR/$INFILE | time runWolfPsortSummary fungi > $OUTDIR/${NAME}.wolfpsort.results.txt

@@ -38,7 +38,7 @@ echo "running $START - $END"
 
 runtmhmm() {
 	INFILE=$1
-	NAME=$(basename $INFILE _proteins_2021-08-30.fasta)
+	NAME=$(basename $INFILE .fasta)
 	echo "$NAME"
 	if [ ! -f $OUTDIR/${NAME}.tmhmm_results.tsv.gz ]; then
 		time tmhmm --noplot < $INDIR/$INFILE > $OUTDIR/${NAME}.tmhmm_results.tsv

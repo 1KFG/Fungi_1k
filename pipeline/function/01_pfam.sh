@@ -23,7 +23,7 @@ OUTDIR=results/function/pfam
 mkdir -p $OUTDIR
 
 IN=$(ls -U $INPUT/*.fasta | sed -n ${N}p)
-PREFIX=$(basename $IN _proteins_2021-08-30.fasta)
+PREFIX=$(basename $IN .fasta)
 rsync -a $PFAM_DB/Pfam-A.hmm* $SCRATCH/
 time hmmscan --cut_ga --cpu $CPU \
     --domtblout $OUTDIR/${PREFIX}.domtblout \

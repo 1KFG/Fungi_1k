@@ -23,7 +23,7 @@ OUTDIR=results/function/cazy/
 mkdir -p $OUTDIR
 
 INFILE=$(ls -U $INDIR | sed -n ${N}p)
-NAME=$(basename $INFILE _proteins_2021-08-30.fasta)
+NAME=$(basename $INFILE .fasta)
 mkdir -p $OUTDIR/$NAME
 time dbcanlight search -i $INDIR/$INFILE -m cazyme -o $OUTDIR/$NAME -t $CPU
 time dbcanlight search -i $INDIR/$INFILE -m sub -o $OUTDIR/$NAME -t $CPU

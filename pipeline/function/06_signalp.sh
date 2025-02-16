@@ -42,7 +42,7 @@ fi
 echo "running $START - $END"
 sed -n ${START},${END}p $sampset | while read INFILE
 do
-	NAME=$(basename $INFILE _proteins_2021-08-30.fasta)
+	NAME=$(basename $INFILE .fasta)
 	echo "$NAME"
 	if [ ! -f $OUTDIR/${NAME}.signalp.results.txt.gz ]; then
 		time signalp6 -od $SCRATCH/${NAME} -org euk --mode fast -format txt -fasta $INDIR/$INFILE --write_procs $WRITECPU -bs $BATCH

@@ -32,7 +32,7 @@ EXT=gene_info.csv
 if [ ! -s bigquery/$EXT.gz ]; then
     INDIR=gff3
     # do these in parallel
-    time ls -U $INDIR | grep \.gff3 | parallel -j $CPU ./scripts/build_genestats_bigquery.py $INDIR/{} --dnaext _2021-08-30.fasta --outdir $SCRATCH/{.}.${EXT}    
+    time ls -U $INDIR | grep \.gff3 | parallel -j $CPU ./scripts/build_genestats_bigquery.py $INDIR/{} --dnaext .fasta --outdir $SCRATCH/{.}.${EXT}    
     FIRST=$(ls -Ud $SCRATCH/*.${EXT} | head -n 1)
     for FILE in $(ls $FIRST/*.csv); do
         FNAME=$(basename $FILE)
