@@ -55,7 +55,7 @@ fi
 
 sed -n ${START},${END}p $sampset | while read INFILE
 do
-	NAME=$(basename $INFILE .proteins.fa)
+	NAME=$(basename $INFILE _proteins_2021-08-30.fasta)
 	echo "$NAME"
     OUT=$OUTDIR/$NAME.${OUTEXT}
     if [ ! -f ${OUT}.gz ]; then

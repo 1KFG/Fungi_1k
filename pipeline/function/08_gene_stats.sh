@@ -17,7 +17,7 @@ do_query() {
     OUTDIR=$SCRATCH/start_${START}
     echo "st=${START} end=${END}"
     mkdir -p $OUTDIR
-    ./scripts/build_genestats_bigquery.py --outdir $OUTDIR $(ls $GFOLDER | sed -n "${START},${END}p" | xargs -i echo "${GFOLDER}/"{})
+    ./scripts/build_genestats_bigquery.py -v --dnaext _2021-08-30.fasta --outdir $OUTDIR $(ls $GFOLDER | sed -n "${START},${END}p" | xargs -i echo "${GFOLDER}/"{})
 }
 export -f do_query
 EXT=gene_info.csv

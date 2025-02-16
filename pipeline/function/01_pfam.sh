@@ -18,16 +18,15 @@ fi
 module load hmmer/3.4
 module load db-pfam
 module load workspace/scratch
-
-INFILE=db/LsFMGC_AA_95_rep.fasta
-TEMP=db/$(basename $INFILE .fasta)__split
-PREFIX=LsFMGC
+INPUT=input
 OUTDIR=results/function/pfam
 mkdir -p $OUTDIR
 
-IN=$TEMP/${PREFIX}.$N
+IN=$(ls -U $INPUT/*.fasta | sed -n ${N}p)
+PREFIX=$(basename $IN _proteins_2021-08-30.fasta)
 rsync -a $PFAM_DB/Pfam-A.hmm* $SCRATCH/
 time hmmscan --cut_ga --cpu $CPU \
-    --domtblout $OUTDIR/${PREFIX}.$N.domtblout \
-    --tblout $OUTDIR/${PREFIX}.$N.tblout \
+    --domtblout $OUTDIR/${PREFIX}.domtblout \
+    --tblout $OUTDIR/${PREFIX}.tblout \
     $SCRATCH/Pfam-A.hmm $IN | gzip -c > $OUTDIR/${PREFIX}.$N.log.gz
+pigz $OUTDIR/${PREFIX}.domtbl ${OUTDIR}/${PREFIX}.tblout
