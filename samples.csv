@@ -57,7 +57,7 @@ Ascra1,Ascochyta rabiei,ArDII,v1.0,,,dikarya,Ascomycota,Pezizomycotina,Dothideom
 Ascru1,Ascoidea rubescens,NRRL Y17699,v1.0,,,dikarya,Ascomycota,Saccharomycotina,Saccharomycetes,,Ascoideales,Ascoideaceae,Ascoidea,Ascoidea rubescens,Ascru1
 Ascsa1,Ascocoryne sarcoides,NRRL 50072,v1.0,,,dikarya,Ascomycota,Pezizomycotina,Leotiomycetes,,Helotiales,Gelatinodiscaceae,Ascocoryne,Ascocoryne sarcoides,Ascsa1
 Ashgo1_1,Eremothecium gossypii,ATCC 10895,v1.0,,,dikarya,Ascomycota,Saccharomycotina,Saccharomycetes,,Saccharomycetales,Saccharomycetaceae,Eremothecium,Eremothecium gossypii,Ashgo1_1
-Aspac1,Aspergillus aculeatus,ATCC16872,v1.1,,dikarya,Ascomycota,Pezizomycotina,Eurotiomycetes,Eurotiomycetidae,Eurotiales,Aspergillaceae,Aspergillus,Aspergillus aculeatus,Aspac1
+Aspac1,Aspergillus aculeatus,ATCC16872,v1.1,,,dikarya,Ascomycota,Pezizomycotina,Eurotiomycetes,Eurotiomycetidae,Eurotiales,Aspergillaceae,Aspergillus,Aspergillus aculeatus,Aspac1
 Aspacu1,Aspergillus aculeatinus,CBS 121060,v1.0,,,dikarya,Ascomycota,Pezizomycotina,Eurotiomycetes,Eurotiomycetidae,Eurotiales,Aspergillaceae,Aspergillus,Aspergillus aculeatinus,Aspacu1
 Aspalbe1,Aspergillus albertensis,,v1.0,,,dikarya,Ascomycota,Pezizomycotina,Eurotiomycetes,Eurotiomycetidae,Eurotiales,Aspergillaceae,Aspergillus,Aspergillus alliaceus,Aspalbe1
 Aspalli1,Aspergillus alliaceus,CBS 536.65,v1.0,,,dikarya,Ascomycota,Pezizomycotina,Eurotiomycetes,Eurotiomycetidae,Eurotiales,Aspergillaceae,Aspergillus,Aspergillus alliaceus,Aspalli1
@@ -74,7 +74,7 @@ Aspcam1,Aspergillus campestris,IBT_28561,v1.0,,,dikarya,Ascomycota,Pezizomycotin
 Aspcand1,Aspergillus candidus,CBS 102.13,v1.0,,,dikarya,Ascomycota,Pezizomycotina,Eurotiomycetes,Eurotiomycetidae,Eurotiales,Aspergillaceae,Aspergillus,Aspergillus candidus,Aspcand1
 Aspcl1,Aspergillus clavatus,NRRL 1,v1.0,,,dikarya,Ascomycota,Pezizomycotina,Eurotiomycetes,Eurotiomycetidae,Eurotiales,Aspergillaceae,Aspergillus,Aspergillus clavatus,Aspcl1
 Aspcor1,Aspergillus coremiiformis,CBS 553.77,v1.0,,,dikarya,Ascomycota,Pezizomycotina,Eurotiomycetes,Eurotiomycetidae,Eurotiales,Aspergillaceae,Aspergillus,Aspergillus coremiiformis,Aspcor1
-Aspcos1,Aspergillus costaricensis,CBS 115574,v1.0,319631,dikarya,Ascomycota,Pezizomycotina,Eurotiomycetes,Eurotiomycetidae,Eurotiales,Aspergillaceae,Aspergillus,Aspergillus costaricensis,,Aspcos1
+Aspcos1,Aspergillus costaricensis,CBS 115574,v1.0,PRJNA235080,319631,dikarya,Ascomycota,Pezizomycotina,Eurotiomycetes,Eurotiomycetidae,Eurotiales,Aspergillaceae,Aspergillus,Aspergillus costaricensis,,Aspcos1
 Aspcri1,Aspergillus cristatus,GZAAS20.1005,v1.0,,,dikarya,Ascomycota,Pezizomycotina,Eurotiomycetes,Eurotiomycetidae,Eurotiales,Aspergillaceae,Aspergillus,Aspergillus cristatus,Aspcri1
 Aspell1,Aspergillus ellipticus,CBS 707.79,v1.0,,,dikarya,Ascomycota,Pezizomycotina,Eurotiomycetes,Eurotiomycetidae,Eurotiales,Aspergillaceae,Aspergillus,Aspergillus ellipticus,Aspell1
 Aspeuc1,Aspergillus eucalypticola,CBS 122712,v1.0,,,dikarya,Ascomycota,Pezizomycotina,Eurotiomycetes,Eurotiomycetidae,Eurotiales,Aspergillaceae,Aspergillus,Aspergillus eucalypticola,Aspeuc1
@@ -160,7 +160,6 @@ Blatri1,Blakeslea trispora,NRRL 2456,v1.0,,,mucoromycota,Mucoromycota,Mucoromyco
 Blatri_F921_1,Blakeslea trispora,F921,v1.0,,,mucoromycota,Mucoromycota,Mucoromycotina,Mucoromycetes,,Mucorales,Choanephoraceae,Blakeslea,Blakeslea trispora,Blatri_F921_1
 Blatri_F986_2,Blakeslea trispora,F986,v1.0,,,mucoromycota,Mucoromycota,Mucoromycotina,Mucoromycetes,,Mucorales,Choanephoraceae,Blakeslea,Blakeslea trispora,Blatri_F986_2
 Blugr2,Blumeria graminis f. sp. hordei,DH14,v1.0,,,dikarya,Ascomycota,Pezizomycotina,Leotiomycetes,,Erysiphales,Erysiphaceae,Blumeria,Blumeria hordei,Blugr2
-Blugra1,Blumeria graminis f. sp. tritici,96224,v1.0,,,dikarya,Ascomycota,Pezizomycotina,Leotiomycetes,,Erysiphales,Erysiphaceae,Blumeria,Blumeria graminis,Blugra1
 Blugra3_16,Blumeria graminis f. sp. tritici,96224,v3.16,,dikarya,Ascomycota,Pezizomycotina,Leotiomycetes,,Erysiphales,Erysiphaceae,Blumeria,Blumeria graminis,Blugra3_16
 BlugrR1_1,Blumeria graminis f. sp. hordei,Race1,v1.0,,,dikarya,Ascomycota,Pezizomycotina,Leotiomycetes,,Erysiphales,Erysiphaceae,Blumeria,Blumeria hordei,BlugrR1_1
 Blyhe1,Blyttiomyces helicus,single-cell,v1.0,,,fungi,Chytridiomycota,,Chytridiomycetes,,,,Blyttiomyces,Blyttiomyces helicus,Blyhe1
@@ -492,7 +491,7 @@ Hanop1,Hanseniaspora opuntiae,AWRI3578,v1.0,,,dikarya,Ascomycota,Saccharomycotin
 Hanos1,Hanseniaspora osmophila,AWRI3579,v1.0,,,dikarya,Ascomycota,Saccharomycotina,Saccharomycetes,,Saccharomycodales,Saccharomycodaceae,Hanseniaspora,Hanseniaspora osmophila,Hanos1
 Hanpo2,Ogataea polymorpha,NCYC_495_leu1.1,v2.0,,,dikarya,Ascomycota,Saccharomycotina,Pichiomycetes,,Pichiales,Pichiaceae,Ogataea,Ogataea polymorpha,Hanpo2
 Hanuv1,Hanseniaspora uvarum,AWRI3580,v1.0,,,dikarya,Ascomycota,Saccharomycotina,Saccharomycetes,,Saccharomycodales,Saccharomycodaceae,Hanseniaspora,Hanseniaspora uvarum,Hanuv1
-Hanva1_1,Hanseniaspora valbyensis,NRRL Y-1626,v1.1,,dikarya,Ascomycota,Saccharomycotina,Saccharomycetes,,Saccharomycodales,Saccharomycodaceae,Hanseniaspora,Hanseniaspora valbyensis,Hanva1_1
+Hanva1_1,Hanseniaspora valbyensis,NRRL Y-1626,v1.1,,,dikarya,Ascomycota,Saccharomycotina,Saccharomycetes,,Saccharomycodales,Saccharomycodaceae,Hanseniaspora,Hanseniaspora valbyensis,Hanva1_1
 Hebcy2,Hebeloma cylindrosporum,h7,v2.0,,,dikarya,Basidiomycota,Agaricomycotina,Agaricomycetes,Agaricomycetidae,Agaricales,Hymenogastraceae,Hebeloma,Hebeloma cylindrosporum,Hebcy2
 Hebvel2,Hebeloma brunneifolium,PMI1Jessy,v2.0,,,dikarya,Basidiomycota,Agaricomycotina,Agaricomycetes,Agaricomycetidae,Agaricales,Hymenogastraceae,Hebeloma,Hebeloma albidulum,Hebvel2
 Helgr1,Helicocarpus griseus,UAMH 5409,v1.0,,,dikarya,Ascomycota,Pezizomycotina,Eurotiomycetes,Eurotiomycetidae,Onygenales,Ajellomycetaceae,Helicocarpus,Helicocarpus griseus,Helgr1
@@ -519,7 +518,7 @@ Hydpi2,Hydnomerulius pinastri,,v2.0,,,dikarya,Basidiomycota,Agaricomycotina,Agar
 Hydru2,Hydnum rufescens,UP504,v2.0,,,dikarya,Basidiomycota,Agaricomycotina,Agaricomycetes,,Cantharellales,Hydnaceae,Hydnum,Hydnum rufescens,Hydru2
 Hygaur1,Hygrophoropsis aurantiaca,ATCC 28755,v1.0,,,dikarya,Basidiomycota,Agaricomycotina,Agaricomycetes,Agaricomycetidae,Boletales,Hygrophoropsidaceae,Hygrophoropsis,Hygrophoropsis aurantiaca,Hygaur1
 Hymrad1,Hymenopellis radicata,IJFM_A160,v1.0,,,dikarya,Basidiomycota,Agaricomycotina,Agaricomycetes,Agaricomycetidae,Agaricales,Physalacriaceae,Hymenopellis,Hymenopellis radicata,Hymrad1
-Hymvar1,Tricladium varicosporioides,PMI 453,v1.0,2075069dikarya,Ascomycota,Pezizomycotina,Leotiomycetes,,Helotiales,Helotiaceae,Hymenoscyphus,Hymenoscyphus varicosporioides,,Hymvar1
+Hymvar1,Tricladium varicosporioides,PMI 453,v1.0,,2075069,dikarya,Ascomycota,Pezizomycotina,Leotiomycetes,,Helotiales,Helotiaceae,Hymenoscyphus,Hymenoscyphus varicosporioides,,Hymvar1
 Hypbu1,Hyphopichia burtonii,NRRL Y-1933,v1.0,,,dikarya,Ascomycota,Saccharomycotina,Pichiomycetes,,Serinales,Debaryomycetaceae,Hyphopichia,Hyphopichia burtonii,Hypbu1
 HypCI4A_1,Hypoxylon sp.,CI-4A,v1.0,,,dikarya,Ascomycota,Pezizomycotina,Sordariomycetes,Xylariomycetidae,Xylariales,Hypoxylaceae,Hypoxylon,Hypoxylon sp.,HypCI4A_1
 HypCO275_1,Hypoxylon sp.,CO27-5,v1.0,,,dikarya,Ascomycota,Pezizomycotina,Sordariomycetes,Xylariomycetidae,Xylariales,Hypoxylaceae,Hypoxylon,Hypoxylon sp.,HypCO275_1
@@ -693,7 +692,7 @@ Muloch1,Multifurca ochricompacta,BPL690,v1.0,,,dikarya,Basidiomycota,Agaricomyco
 Mutel1,Mutinus elegans,ME.BST,v1.0,,,dikarya,Basidiomycota,Agaricomycotina,Agaricomycetes,Phallomycetidae,Phallales,Phallaceae,Mutinus,Mutinus elegans,Mutel1
 Mycafr1,Mycotypha africana,NRRL 2978,v1.0,,,mucoromycota,Mucoromycota,Mucoromycotina,Mucoromycetes,,Mucorales,Mycotyphaceae,Mycotypha,Mycotypha africana,Mycafr1
 Myceu1,Mycosphaerella eumusae,CBS 114824,v1.0,,,dikarya,Ascomycota,Pezizomycotina,Dothideomycetes,Dothideomycetidae,Mycosphaerellales,Mycosphaerellaceae,Pseudocercospora,Pseudocercospora eumusae,Myceu1
-Mycfi2,Pseudocercospora fijiensis,CIRAD86,v2.0,1873960dikarya,Ascomycota,Pezizomycotina,Dothideomycetes,Dothideomycetidae,Mycosphaerellales,Mycosphaerellaceae,Pseudocercospora,Pseudocercospora fijiensis,,Mycfi2
+Mycfi2,Pseudocercospora fijiensis,CIRAD86,v2.0,,1873960,dikarya,Ascomycota,Pezizomycotina,Dothideomycetes,Dothideomycetidae,Mycosphaerellales,Mycosphaerellaceae,Pseudocercospora,Pseudocercospora fijiensis,,Mycfi2
 Mycgal1,Mycena galopus,ATCC-62051,v1.0,,,dikarya,Basidiomycota,Agaricomycotina,Agaricomycetes,Agaricomycetidae,Agaricales,Mycenaceae,Mycena,Mycena galopus,Mycgal1
 Mycgr3,Mycosphaerella graminicola,,v2.0,,,dikarya,Ascomycota,Pezizomycotina,Dothideomycetes,Dothideomycetidae,Mycosphaerellales,Mycosphaerellaceae,Zymoseptoria,Zymoseptoria tritici,Mycgr3
 Mycind1,Mycotypha indica,IMI_211999,v1.0,,,mucoromycota,Mucoromycota,Mucoromycotina,Mucoromycetes,,Mucorales,Mycotyphaceae,Mycotypha,Mycotypha indica,Mycind1
@@ -748,7 +747,7 @@ Ophun1,Ophiocordyceps kimflemingiae,SC16a,v1.0,,,dikarya,Ascomycota,Pezizomycoti
 Ordco1,Ordospora colligata,OC4,v1.0,,,fungi,Microsporidia,,,,,Ordosporidae,Ordospora,Ordospora colligata,Ordco1
 Orpsp1_1,Orpinomyces sp.,,v1.0,,,fungi,Chytridiomycota,,Neocallimastigomycetes,,Neocallimastigales,Neocallimastigaceae,Orpinomyces,Orpinomyces sp.,Orpsp1_1
 Oudmuc1,Oudemansiella mucida,CBS 558.79,v1.0,,,dikarya,Basidiomycota,Agaricomycotina,Agaricomycetes,Agaricomycetidae,Agaricales,Physalacriaceae,Mucidula,Mucidula mucida,Oudmuc1
-Pacta1_2,Pachysolen tannophilus,NRRL Y-2460,v1.2,,dikarya,Ascomycota,Saccharomycotina,Pichiomycetes,,Alaninales,Pachysolenaceae,Pachysolen,Pachysolen tannophilus,Pacta1_2
+Pacta1_2,Pachysolen tannophilus,NRRL Y-2460,v1.2,,,dikarya,Ascomycota,Saccharomycotina,Pichiomycetes,,Alaninales,Pachysolenaceae,Pachysolen,Pachysolen tannophilus,Pacta1_2
 Paevar1,Paecilomyces variotii,CBS 101075,v1.0,,,dikarya,Ascomycota,Pezizomycotina,Eurotiomycetes,Eurotiomycetidae,Eurotiales,Thermoascaceae,Paecilomyces,Paecilomyces variotii,Paevar1
 Panpap1,Panaeolus papilionaceus,CIRM-BRFM_715,v1.0,,,dikarya,Basidiomycota,Agaricomycotina,Agaricomycetes,Agaricomycetidae,Agaricales,Galeropsidaceae,Panaeolus,Panaeolus papilionaceus,Panpap1
 Panru1,Panus rudis,PR-1116_ss-1,v1.0,,,dikarya,Basidiomycota,Agaricomycotina,Agaricomycetes,,Polyporales,Panaceae,Panus,Panus rudis,Panru1
@@ -832,7 +831,7 @@ Pickud1,Pichia kudriavzevii,CBS 573,v1.0,,,dikarya,Ascomycota,Saccharomycotina,P
 Picme2,Pichia membranifaciens,,v2.0,,,dikarya,Ascomycota,Saccharomycotina,Pichiomycetes,,Pichiales,Pichiaceae,Pichia,Pichia membranifaciens,Picme2
 Picpa1,Pichia pastoris,,v1.0,,,dikarya,Ascomycota,Saccharomycotina,Pichiomycetes,,Pichiales,Pichiaceae,Komagataella,Komagataella pastoris,Picpa1
 Picst3,Scheffersomyces stipitis,NRRL Y-11545,v2.0,,,dikarya,Ascomycota,Saccharomycotina,Pichiomycetes,,Serinales,Debaryomycetaceae,Scheffersomyces,Scheffersomyces stipitis,Picst3
-Pieho1_1,Piedraia hortae,CBS 480.64,v1.1,,dikarya,Ascomycota,Pezizomycotina,Dothideomycetes,Dothideomycetidae,Capnodiales,Piedraiaceae,Piedraia,Piedraia hortae,Pieho1_1
+Pieho1_1,Piedraia hortae,CBS 480.64,v1.1,,,dikarya,Ascomycota,Pezizomycotina,Dothideomycetes,Dothideomycetidae,Capnodiales,Piedraiaceae,Piedraia,Piedraia hortae,Pieho1_1
 Pilano1,Pilaira anomala,RSA1997,v1.0,,,mucoromycota,Mucoromycota,Mucoromycotina,Mucoromycetes,,Mucorales,Mucoraceae,Pilaira,Pilaira anomala,Pilano1
 Pilcr1,Piloderma olivaceum,F_1598,v1.0,,,dikarya,Basidiomycota,Agaricomycotina,Agaricomycetes,Agaricomycetidae,Atheliales,Atheliaceae,Piloderma,Piloderma olivaceum,Pilcr1
 Pilidi1,Coniella lustricola,B22-T-1,v1.0,,,dikarya,Ascomycota,Pezizomycotina,Sordariomycetes,Sordariomycetidae,Diaporthales,Schizoparmaceae,Coniella,Coniella lustricola,Pilidi1
@@ -899,7 +898,7 @@ Pursp1,Purpureocillium sp.,UdeA0106,v1.0,,,dikarya,Ascomycota,Pezizomycotina,Sor
 Pycci1,Pycnoporus cinnabarinus,CIRM-BRFM_137,v1.0,,,dikarya,Basidiomycota,Agaricomycotina,Agaricomycetes,,Polyporales,Polyporaceae,Trametes,Trametes cinnabarina,Pycci1
 Pycco1,Pycnoporus coccineus,CIRM-BRFM_310,v1.0,,,dikarya,Basidiomycota,Agaricomycotina,Agaricomycetes,,Polyporales,Polyporaceae,Trametes,Trametes coccinea,Pycco1
 Pycpun1,Pycnoporus puniceus,CIRM-BRFM_1868,v1.0,,,dikarya,Basidiomycota,Agaricomycotina,Agaricomycetes,,Polyporales,Polyporaceae,Trametes,Trametes punicea,Pycpun1
-Pycsa1,Trametes sanguinea,CIRM-BRFM_1264,v1.0,158606,dikarya,Basidiomycota,Agaricomycotina,Agaricomycetes,,Polyporales,Polyporaceae,Trametes,Trametes sanguinea,,Pycsa1
+Pycsa1,Trametes sanguinea,CIRM-BRFM_1264,v1.0,,158606,dikarya,Basidiomycota,Agaricomycotina,Agaricomycetes,,Polyporales,Polyporaceae,Trametes,Trametes sanguinea,,Pycsa1
 Pyrco1,Pyronema confluens,CBS 100304,v1.0,,,dikarya,Ascomycota,Pezizomycotina,Pezizomycetes,,Pezizales,Pyronemataceae,Pyronema,Pyronema omphalodes,Pyrco1
 Pyrsp1,Pyrenochaeta sp.,DS3sAY3a,v1.0,,,dikarya,Ascomycota,Pezizomycotina,Dothideomycetes,Pleosporomycetidae,Pleosporales,Cucurbitariaceae,Pyrenochaeta,Pyrenochaeta sp.,Pyrsp1
 Pyrtr1,Pyrenophora tritici-repentis,,v1.0,,,dikarya,Ascomycota,Pezizomycotina,Dothideomycetes,Pleosporomycetidae,Pleosporales,Pleosporaceae,Pyrenophora,Pyrenophora tritici-repentis,Pyrtr1
@@ -911,7 +910,7 @@ Rhanym2_1,Rhamphospora nymphaeae,CBS 172.38,v1.0,,,dikarya,Basidiomycota,Ustilag
 Rhice1_1,Glomus cerebriforme,DAOM 227022,v1.0,,,mucoromycota,Mucoromycota,Glomeromycotina,Glomeromycetes,,Glomerales,Glomeraceae,Glomus,Glomus cerebriforme,Rhice1_1
 Rhich1,Rhizopus microsporus var. chinensis,CCTCC_M201021,v1.0,,,mucoromycota,Mucoromycota,Mucoromycotina,Mucoromycetes,,Mucorales,Rhizopodaceae,Rhizopus,Rhizopus microsporus,Rhich1
 Rhicl1,Rhizophagus clarus,HR1,v1.0,,,mucoromycota,Mucoromycota,Glomeromycotina,Glomeromycetes,,Glomerales,Glomeraceae,Rhizophagus,Rhizophagus clarus,Rhicl1
-Rhidi1,Oehlia diaphana,,v1.0,118614,mucoromycota,Mucoromycota,Glomeromycotina,Glomeromycetes,,Glomerales,Glomeraceae,Oehlia,Oehlia diaphana,,Rhidi1
+Rhidi1,Oehlia diaphana,,v1.0,,118614,mucoromycota,Mucoromycota,Glomeromycotina,Glomeromycetes,,Glomerales,Glomeraceae,Oehlia,Oehlia diaphana,,Rhidi1
 Rhier1,Rhizoscyphus ericae,UAMH 7357,v1.0,,,dikarya,Ascomycota,Pezizomycotina,Leotiomycetes,,Helotiales,Hyaloscyphaceae,Hyaloscypha,Hyaloscypha hepaticicola,Rhier1
 Rhihy1,Rhizoclosmatium globosum,JEL800,v1.0,,,fungi,Chytridiomycota,,Chytridiomycetes,,Chytridiales,Chytriomycetaceae,Rhizoclosmatium,Rhizoclosmatium globosum,Rhihy1
 Rhiir2_1,Rhizophagus irregularis,DAOM 197198,v1.0,,,mucoromycota,Mucoromycota,Glomeromycotina,Glomeromycetes,,Glomerales,Glomeraceae,Rhizophagus,Rhizophagus irregularis,Rhiir2_1
@@ -956,7 +955,7 @@ Rusrug1,Russula rugulosa,BPL654,v1.0,,,dikarya,Basidiomycota,Agaricomycotina,Aga
 Rusvin1,Russula vinacea,BPL710,v1.0,,,dikarya,Basidiomycota,Agaricomycotina,Agaricomycetes,,Russulales,Russulaceae,Russula,Russula vinacea,Rusvin1
 Rutfi1,Rutstroemia firma,CBS 115.86,v1.0,,,dikarya,Ascomycota,Pezizomycotina,Leotiomycetes,,Helotiales,Rutstroemiaceae,Rutstroemia,Rutstroemia firma,Rutfi1
 Sacarb1,Saccharomyces arboricola,H-6,v1.0,,,dikarya,Ascomycota,Saccharomycotina,Saccharomycetes,,Saccharomycetales,Saccharomycetaceae,Saccharomyces,Saccharomyces arboricola,Sacarb1
-SacAshbya_1,[Ashbya] aceris (nom. inval.),FD-2008,v1.0,566037dikarya,Ascomycota,Saccharomycotina,Saccharomycetes,,Saccharomycetales,Saccharomycetaceae,Eremothecium,[Ashbya] aceris (nom. inval.),,SacAshbya_1
+SacAshbya_1,[Ashbya] aceris (nom. inval.),FD-2008,v1.0,,566037,dikarya,Ascomycota,Saccharomycotina,Saccharomycetes,,Saccharomycetales,Saccharomycetaceae,Eremothecium,[Ashbya] aceris (nom. inval.),,SacAshbya_1
 Sacboulardii_1,Saccharomyces boulardii,unique28,v1.0,,,dikarya,Ascomycota,Saccharomycotina,Saccharomycetes,,Saccharomycetales,Saccharomycetaceae,Saccharomyces,Saccharomyces boulardii (nom. inval.),Sacboulardii_1
 Sacca1,Saccharomycopsis capsularis,NRRL Y-17639,v1.0,,,dikarya,Ascomycota,Saccharomycotina,Saccharomycetes,,Ascoideales,Saccharomycopsidaceae,Saccharomycopsis,Saccharomycopsis capsularis,Sacca1
 Sacce1,Saccharomyces cerevisiae,S288C,v1.0,,,dikarya,Ascomycota,Saccharomycotina,Saccharomycetes,,Saccharomycetales,Saccharomycetaceae,Saccharomyces,Saccharomyces cerevisiae,Sacce1
@@ -1059,7 +1058,7 @@ Talis1,Talaromyces islandicus,WF3812,v1.0,,,dikarya,Ascomycota,Pezizomycotina,Eu
 Talma1_2,Talaromyces marneffei,ATCC 18224,v1.0,,,dikarya,Ascomycota,Pezizomycotina,Eurotiomycetes,Eurotiomycetidae,Eurotiales,Trichocomaceae,Talaromyces,Talaromyces marneffei,Talma1_2
 Talst1_2,Talaromyces stipitatus,ATCC 10500,v1.0,,,dikarya,Ascomycota,Pezizomycotina,Eurotiomycetes,Eurotiomycetidae,Eurotiales,Trichocomaceae,Talaromyces,Talaromyces stipitatus,Talst1_2
 Tapde1_1,Taphrina deformans,,v1.0,,,dikarya,Ascomycota,Taphrinomycotina,Taphrinomycetes,,Taphrinales,Taphrinaceae,Taphrina,Taphrina deformans,Tapde1_1
-Terbo2,Terfezia boudieri,ATCC MYA-4762,v1.1,,dikarya,Ascomycota,Pezizomycotina,Pezizomycetes,,Pezizales,Pezizaceae,Terfezia,Terfezia boudieri,Terbo2
+Terbo2,Terfezia boudieri,ATCC MYA-4762,v1.1,,,dikarya,Ascomycota,Pezizomycotina,Pezizomycetes,,Pezizales,Pezizaceae,Terfezia,Terfezia boudieri,Terbo2
 Tercla1,Terfezia claveryi,T7,v1.0,,,dikarya,Ascomycota,Pezizomycotina,Pezizomycetes,,Pezizales,Pezizaceae,Terfezia,Terfezia claveryi,Tercla1
 TerJ132_1,Termitomyces sp.,J132,v1.0,,,dikarya,Basidiomycota,Agaricomycotina,Agaricomycetes,Agaricomycetidae,Agaricales,Lyophyllaceae,Termitomyces,Termitomyces sp.,TerJ132_1
 TerNC1134_1,Teratosphaeriaceae sp.,NC1134,v1.0,,,dikarya,Ascomycota,Pezizomycotina,Dothideomycetes,Dothideomycetidae,Mycosphaerellales,Teratosphaeriaceae,,Teratosphaeriaceae sp.,TerNC1134_1
