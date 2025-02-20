@@ -7,6 +7,7 @@ import argparse
 import csv
 import os
 import time
+import re
 
 
 def calculate_aa_frequencies(fasta_file):
@@ -16,8 +17,9 @@ def calculate_aa_frequencies(fasta_file):
     for record in SeqIO.parse(fasta_file, "fasta"):
         if not species:
             species = record.id.split("_")[0]
-        aa_counter.update(record.seq)
-        total_aa += len(record.seq)
+        seqstrnoStop = re.sub('\*','',str(record.seq))
+        aa_counter.update(seqstrnoStop)
+        total_aa += len(seqstrnoStop)
 
     aa_frequencies = {aa: count / total_aa for aa, count in aa_counter.items()}
     return (species,aa_frequencies)

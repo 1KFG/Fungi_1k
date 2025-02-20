@@ -1,5 +1,5 @@
 #!/usr/bin/bash -l
-#SBATCH -p short -c 10 --mem 48gb -N 1 -n 1 --out logs/tmhmm.%a.log
+#SBATCH -p short -c 50 --mem 48gb -N 1 -n 1 --out logs/tmhmm.%a.log
 module load tmhmm
 
 CPU=1
@@ -15,7 +15,7 @@ if [ -z $N ]; then
         exit
     fi
 fi
-FILEBATCH=10 # how many files to process at a time
+FILEBATCH=50 # how many files to process at a time
 INDIR=$(realpath input)
 OUTDIR=results/function/tmhmm/
 mkdir -p $OUTDIR
@@ -38,13 +38,16 @@ echo "running $START - $END"
 
 runtmhmm() {
 	INFILE=$1
-	NAME=$(basename $INFILE .fasta)
+	NAME=$(basename $INFILE .proteins.fa)
 	echo "$NAME"
 	if [ ! -f $OUTDIR/${NAME}.tmhmm_results.tsv.gz ]; then
 		time tmhmm --noplot < $INDIR/$INFILE > $OUTDIR/${NAME}.tmhmm_results.tsv
 		pigz  $OUTDIR/${NAME}.tmhmm_results.tsv
 	fi
-
+	if [ ! -f $OUTDIR/${NAME}.tmhmm_short.tsv.gz ]; then
+		time tmhmm --short --noplot < $INDIR/$INFILE > $OUTDIR/${NAME}.tmhmm_short.tsv
+		pigz $OUTDIR/${NAME}.tmhmm_short.tsv
+	fi
 }
 export -f runtmhmm 
 export INDIR OUTDIR

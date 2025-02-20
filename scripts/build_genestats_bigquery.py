@@ -64,20 +64,14 @@ def parse_gff(gff, dna="", codon_table=1, debug=False):
         # dnadb = SeqIO.index_db(dna + ".idx",dna,format='fasta')
         # dnadb = SeqIO.index(dna,format='fasta')
         dnadb = Fasta(dna)
-    tRNA_gff = os.path.join(os.path.dirname(os.path.realpath(gff)), 
-                            "../predict_misc/trnascan.no-overlaps.gff3")
-    temp_tRNA = None
+    stem = ".".join(os.path.basename(dna).split('.')[:-1])
+    tRNA_gff = os.path.join("results","tRNA", f'{stem}.trnascan.gff3')
     if os.path.exists(tRNA_gff):
         tRNA_gff = os.path.realpath(tRNA_gff)        
-        temp_tRNA = tempfile.NamedTemporaryFile(delete=False,suffix=".bed")
     else:
         tRNA_gff = None
 
     with open(gff, "r") as gff_fh:
-        if debug:
-            print(f"DEBUG: tRNA_gff is {tRNA_gff}")
-            print(f"DEBUG: tRNA_temp is {temp_tRNA.name}")
-
         transcript2gene = {}
         time0 = time.time()
         for line in gff_fh:
@@ -114,6 +108,7 @@ def parse_gff(gff, dna="", codon_table=1, debug=False):
                     )
                     continue
                 gene_id = group_data["ID"]
+                gene_name = group_data.get("Name", "NULL")
                 if gene_id in genedata:
                     print(f"WARNING: Duplicate gene ID {gene_id} in {gff}")
                     continue
@@ -123,6 +118,7 @@ def parse_gff(gff, dna="", codon_table=1, debug=False):
                     "end": fend,
                     "strand": fstrand,
                     "type": "NULL",
+                    "gene_name": gene_name,
                     "transcripts": {},
                 }
             elif ftype == "mRNA":
@@ -133,12 +129,15 @@ def parse_gff(gff, dna="", codon_table=1, debug=False):
                     continue
                 mrna_id = group_data["ID"]
                 gene_id = group_data["Parent"]
+                transcript_count = len(genedata[gene_id]["transcripts"])
+                mrna_name = genedata[gene_id]["gene_name"]+f"-T{transcript_count}"
                 transcript2gene[mrna_id] = gene_id
                 if gene_id not in genedata:
                     print(f"WARNING: mRNA {mrna_id} has no gene in {gff}")
                     continue
                 genedata[gene_id]["type"] = "protein_coding"
                 genedata[gene_id]["transcripts"][mrna_id] = {
+                    "transcript_name": mrna_name,
                     "chrom": fields[0],
                     "start": fstart,
                     "end": fend,
@@ -150,45 +149,13 @@ def parse_gff(gff, dna="", codon_table=1, debug=False):
                     "CDS": [],
                     "intron": [],
                     "protein": {
-                        "id": f"{mrna_id}.protein",
+#                        "id": f"{mrna_id}.protein",
+                        "id": f"{gene_name}.protein",
                         "parent": mrna_id,
                         "length": None,
                         "md5checksum": None,
                     },
                 }
-            elif ftype == "tRNA":
-                if not ("ID" in group_data and "Parent" in group_data):
-                    print(
-                        f"WARNING: Cannot parse groups {group_data} no ID or Parent in {gff}\n{line}"
-                    )
-                    continue
-                trna_id = group_data["ID"]
-                gene_id = group_data["Parent"]
-                amino_acid = group_data.get("product", "NULL")
-                amino_acid = amino_acid.replace("tRNA-", "")
-                amino_acid = amino_acid.replace(";", "")
-                if tRNA_gff:
-                    row = "\t".join([fields[0], str(fstart), str(fend), gene_id])+"\n"
-                    temp_tRNA.write(b'%s' % row.encode())
-                transcript2gene[trna_id] = gene_id
-                if gene_id not in genedata:
-                    print(f"WARNING: tRNA {trna_id} has no gene in {gff}")
-                    continue
-                genedata[gene_id]["type"] = "tRNA_gene"                
-                genedata[gene_id]["tRNA_amino_acid"] = amino_acid
-                genedata[gene_id]["codon"] = ""
-                genedata[gene_id]["anticodon"] = ""
-                genedata[gene_id]["transcripts"][trna_id] = {
-                    "chrom": fields[0],
-                    "start": fstart,
-                    "end": fend,
-                    "strand": fstrand,
-                    "is_partial": "FALSE",
-                    "has_start_codon": "NULL",
-                    "has_stop_codon": "NULL",
-                    "exon": [],
-                    "intron": [],
-                    }
             elif ftype in ("exon", "CDS"):
                 if "Parent" not in group_data:
                     print(
@@ -214,7 +181,8 @@ def parse_gff(gff, dna="", codon_table=1, debug=False):
                     )
                     continue
                 n = len(genedata[gene_id]["transcripts"][parent_id][ftype]) + 1
-                exon_id = f"{parent_id}.{ftype}{n}"
+                transcript_name = genedata[gene_id]["transcripts"][parent_id]['transcript_name']
+                exon_id = f"{transcript_name}.{ftype}{n}"
                 # if "ID" in group_data:  # override with existing value if provided
                 #   exon_id = group_data["ID"]
                 # zero base indexing
@@ -233,9 +201,10 @@ def parse_gff(gff, dna="", codon_table=1, debug=False):
                 )
     for gene_name, gene in genedata.items():
         chrom_segment = dnadb[gene["chrom"]]
-        for transcript_name, transcript in gene["transcripts"].items():
+        for transcriptid, transcript in gene["transcripts"].items():
             if debug:
-                print(f"DEBUG: Processing {transcript_name}")
+                print(f"DEBUG: Processing {transcript_id}")
+            transcript_name = transcript['transcript_name']
             exonlist = sorted(
                 transcript["exon"], key=lambda x: x["strand"] * x["start"]
             )
@@ -263,7 +232,8 @@ def parse_gff(gff, dna="", codon_table=1, debug=False):
                         print(
                             f"WARNING: improper start/end for exon {exon} lastexon: {lastexon}"
                         )
-                        return
+                        intronstart=intronend
+                                                
                     intron = chrom_segment[intronstart - 1 : intronend]
                     if exon["strand"] == -1:
                         intron = -intron
@@ -349,13 +319,14 @@ def parse_gff(gff, dna="", codon_table=1, debug=False):
                                 print(
                                     f"WARNING: Could not find intron between: lastcds is {lastcds} and cds is {cds}"
                                 )
-                                print(f'WARNING: introns are {transcript["intron"]}')
+                                print(f'WARNING: introns are {transcript["intron"]} in {gff}')                                
                         else:
                             intron_index += 1
-
-                        intronobj = transcript["intron"][intron_index]
-                        intronobj["codon_position"] = int(len(CDS_sequence) / 3)
-                        intronobj["codon_frame"] = len(CDS_sequence) % 3
+                        
+                        if intron_index is not None:
+                            intronobj = transcript["intron"][intron_index]
+                            intronobj["codon_position"] = int(len(CDS_sequence) / 3)
+                            intronobj["codon_frame"] = len(CDS_sequence) % 3
                     lastcds = cds
                     c += 1
 
@@ -385,37 +356,87 @@ def parse_gff(gff, dna="", codon_table=1, debug=False):
                     str(proteinseq).encode()
                 ).hexdigest()
 
+    # fix this as JGI GFF doens't have tRNA but can use trnscan results
     if tRNA_gff:
-        temp_tRNA.close()
-        tRNA_bed = BedTool(temp_tRNA.name)
-        tRNA_gff_bedtools = BedTool(tRNA_gff)
-        tRNAs = tRNA_bed.intersect(tRNA_gff_bedtools,wo=True)
-        for tRNA in tRNAs:
-            chrom = tRNA.chrom
-            start = tRNA.start
-            end = tRNA.end
-            trna_id = tRNA.name            
-            if trna_id not in genedata:
-                print(f"WARNING: tRNA {trna_id} has no gene in {gff}")
-                continue
-            gtype = tRNA[6]
-            if gtype != "tRNA":
-                continue
-            for f in tRNA[12].split(";"):
-                (tag, note) = f.split("=")
-                if tag == "note":
-                    m = trna_regexp.search(note)
-                    if m:
-                        anticodon = m.group(1)
-                        codon = Seq(anticodon).reverse_complement()
-                        genedata[trna_id]["tRNA_codon"] = str(Seq(anticodon).reverse_complement())
-                        genedata[trna_id]["tRNA_anticodon"] = anticodon
-                        if debug:
-                            print(f"DEBUG: found and adding tRNA_codon for {trna_id} with {anticodon} -> {codon}")
-                    else:
-                        print(f"WARNING: No anticodon found in {note} for {trna_id}")            
-        if os.path.exists(temp_tRNA.name):
-            os.unlink(temp_tRNA.name)
+        with open(tRNA_gff,"r") as tRNA_fh:
+            species = stem    # only way to have/get the species name right now in JGI files
+            
+            for line in tRNA_fh:
+                if line.startswith("#"):
+                    continue
+                fields = line.strip().split("\t")
+                if len(fields) < 9:
+                    if debug:
+                        print(f"DEBUG: Skipping line with {len(fields)} fields in {gff}")
+                    continue
+                
+                group_data = {}
+                for f in fields[8].split(";"):
+                    if not f or "=" not in f:
+                        continue
+                    (tag, value) = f.split("=")
+                    group_data[tag] = value
+                (fstart, fend) = sorted([int(fields[3]), int(fields[4])])
+                fstrand = -1 if fields[6] == "-" else 1
+
+                ftype = fields[2]
+                if ftype == 'tRNA':
+                    gene_id = f'{species}.{group_data["Parent"]}'
+                    amino_acid = group_data.get("product", "NULL")
+                    amino_acid = amino_acid.replace("tRNA-", "")
+                    amino_acid = amino_acid.replace(";", "")
+                    (anticodon,codon) = ("","")
+                    if 'note' in group_data:
+                        note = group_data['note']
+                        m = trna_regexp.search(note)
+                        if m:
+                            anticodon = m.group(1)
+                            codon = Seq(anticodon).reverse_complement()
+                    genedata[gene_id] = {
+                        "chrom": fields[0],
+                        "start": fstart,
+                        "end": fend,
+                        "strand": fstrand,
+                        "type": "tRNA_gene",
+                        "gene_name": f'{stem}.{gene_id}',
+                        "tRNA_amino_acid": amino_acid,
+                        "codon": "",
+                        "anticodon": "",
+                        "gene_name": gene_id,
+                        "tRNA_codon": codon,
+                        "tRNA_anticodon": anticodon,
+                        "transcripts": {},
+                        }
+                    trna_id = f'{species}.{group_data["ID"]}'
+                    genedata[gene_id]["transcripts"][trna_id] = {
+                        'transcript_name': f'{stem}.{trna_id}',
+                        "chrom": fields[0],
+                        "start": fstart,
+                        "end": fend,
+                        "strand": fstrand,
+                        "is_partial": "FALSE",
+                        "has_start_codon": "NULL",
+                        "has_stop_codon": "NULL",
+                        "exon": [],
+                        "intron": [],
+                    }
+                elif ftype == 'exon':
+                    trna_id = f'{species}.{group_data["Parent"]}'
+                    exon_id = f'{species}.{group_data["ID"]}'
+                    exonseq_GC = getGC(dnadb[fields[0]][fstart - 1 : fend])
+                    genedata[gene_id]["transcripts"][trna_id]['exon'].append(
+                        {
+                            "id": exon_id,
+                            "chrom": fields[0],
+                            "start": fstart,
+                            "end": fend,
+                            "strand": fstrand,
+                            "GC_content": f"{exonseq_GC:0.2f}",
+                            "order": None,
+                            "frame": fields[7],
+                        }
+                    )
+                    
     return genedata
 
 
@@ -504,6 +525,7 @@ def main():
             [
                 "gene_id",
                 "transcript_id",
+                "transcript_name"
                 "chrom",
                 "start",
                 "end",
@@ -598,8 +620,12 @@ def main():
             genedata = parse_gff(gff=gff_file_l, dna=dnafile, debug=args.debug)
             if genedata:
                 IDs_to_process.add(fstem)
+            else:
+                print(f"WARNING: No gene data found in {gff_file_l} genedata is empty")
+                continue
             species = None
-            for genename, gene in genedata.items():
+            for geneid, gene in genedata.items():
+                genename = gene["gene_name"]
                 if not species:
                     (species) = genename.split("_")[0]
                 genecsv.writerow(
@@ -622,11 +648,12 @@ def main():
                         ]
                     )
                 # consider saving space by only encoding strand on the gene level
-                for transcriptname, transcript in gene["transcripts"].items():
+                for transcriptid, transcript in gene["transcripts"].items():
+                    transcriptname = transcript["transcript_name"]
                     mrnacsv.writerow(
                         [
                             genename,
-                            transcriptname,
+                            transcriptname,                            
                             transcript["chrom"],
                             transcript["start"],
                             transcript["end"],
@@ -670,7 +697,7 @@ def main():
                             introncsv.writerow(
                                 [
                                     intron["id"],
-                                    intron["parent_id"],
+                                    transcriptname,
                                     intron["intron_number"],
                                     intron["chrom"],
                                     intron["start"],

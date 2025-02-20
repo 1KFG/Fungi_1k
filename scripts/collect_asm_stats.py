@@ -40,25 +40,10 @@ def main():
         header.extend(statheader)
         csvout.writerow(header)
         
-        for sp in species:
-            
-            species_string = sp['SPECIES']
-            if len(sp['STRAIN']):
-                species_string += "_" + sp['STRAIN']
-            species_string = species_string.replace(' ', '_')
-            stemname = f"{species_string}.scaffolds.stats.txt"
+        for sp in species:            
+            species_string = sp['ASMID']
+            stemname = f"{species_string}.stats.txt"
             statsfile = os.path.join(args.genomedir,stemname)
-            if not os.path.exists(statsfile):
-                species_string = sp['SPECIESIN']
-                if len(sp['STRAIN']):
-                    species_string += "_" + sp['STRAIN']
-                species_string = species_string.replace(' ', '_')
-                
-                stemname = f"{species_string}.scaffolds.stats.txt"
-                statsfile = os.path.join(args.genomedir,stemname)
-                if not os.path.exists(statsfile):
-                    print(f"Missing {statsfile}")
-                    continue
             if args.debug:
                 print(stemname)
             row= [ sp['LOCUSTAG'], sp['SPECIES'], species_string ]
@@ -78,7 +63,7 @@ def main():
                         # this is just a sanity check to make sure the filename based
                         # used to open also matches the name that this asm was run on
                         line = re.sub(r'^Assembly statistics for:\s+','',line)
-                        asmfile = line.replace('.scaffolds.fa','')
+                        asmfile = line.replace('.fasta','')
                         if asmfile != species_string:
                             print(f"reading {statsfile} for {species_string} but found {asmfile} in file")
                         continue

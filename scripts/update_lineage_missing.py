@@ -6,20 +6,28 @@ import gzip
 import csv
 import argparse
 
+# # cut -d, -f2 samples.csv | taxonkit name2taxid -r > name2taxid.txt
+# cat name2taxid.txt | taxonkit lineage -i 2 -R > samples.lineage.txt
+# this one has 3 columns, with SPECIESIN as first column
+
 def load_lineages(fh):
     lineages = {}
+    lineages_name = {}
     for line in fh:
         
         row = line.strip().split("\t")
-        taxid = row[0]
         if len(row) < 3:
             continue
+
+        taxid = row[1]
+        name = row[0]
         lineages[taxid] = {}
-        names = row[1].split(";")
-        ranknames = row[2].split(";")
+        lineages_name[name] = taxid
+        names = row[4].split(";")
+        ranknames = row[5].split(";")
         for i in range(0, len(names)):
             lineages[taxid][ranknames[i]] = names[i]
-    return lineages
+    return (lineages,lineages_name)
 
 def load_samples(fh):
     samples = []
@@ -34,7 +42,7 @@ if __name__ == "__main__":
                                     epilog='Example: update_lineage_missing.py')
     parser.add_argument("--samples", default="samples.csv", help="samples.csv file for fungi5k")
     parser.add_argument("--lineage", default="samples.lineage.txt", 
-                        help="samples.lineage.txt file by running ' cut -d, -f5 samples.csv | taxonkit lineage -R > samples.lineage.txt'")
+                        help="samples.lineage.txt file by running 'cut -d, -f2 samples.csv | taxonkit name2taxid -r | taxonkit lineage -i 2 -c -R > samples.lineage.txt'")
 
     parser.add_argument('-v','--debug', help='Debugging output', action='store_true')
 
@@ -44,7 +52,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     with open(args.samples,"r") as fh,open(args.lineage,"r") as linfh, open(args.outfile, "w",newline="") as outfh:
 
-        lineage = load_lineages(linfh)
+        (lineage,lineage_name) = load_lineages(linfh)
         csvout = csv.writer(outfh)
         reader = csv.reader(fh)
 
@@ -58,8 +66,13 @@ if __name__ == "__main__":
             taxid = row[header2col['NCBI_TAXONID']]
             taxonomyrange = []
             #row[5:13]
+            lastname = ""
+            
+            if not taxid:                
+                speciesin=row[header2col['SPECIESIN']]
+                print(speciesin)
+                taxid = lineage_name[speciesin]
             lastname = lineage[taxid]['kingdom']
-            print(row[6:14])
             for name in ['phylum','subphylum','class','subclass','order','family','genus','species']:
                 if name not in lineage[taxid]:
                     if args.debug:

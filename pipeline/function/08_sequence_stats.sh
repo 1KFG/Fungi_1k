@@ -13,31 +13,33 @@ EXT=aa_freq.csv
 if [ ! -s bigquery/$EXT.gz ]; then
     INDIR=input
     
-    ls -U $INDIR | grep _proteins_2021-08-30\.fasta | parallel -J $CPU ./scripts/calculate_AA_freq.py $INDIR/{} -v -o $SCRATCH/{.}.$EXT
+    ls -U $INDIR | parallel -J $CPU ./scripts/calculate_AA_freq.py $INDIR/{} -o $SCRATCH/{.}.$EXT
     FIRST=$(ls -U $SCRATCH/*.$EXT | head -n 1)
     head -n 1 $FIRST > bigquery/$EXT
     ls -U $SCRATCH | grep -E "$EXT" | xargs -I {} sh -c "tail -n +2 $SCRATCH/{} >> bigquery/$EXT"
     pigz -f bigquery/$EXT
 fi
+
 EXT=codon_freq.csv
 if [ ! -s bigquery/$EXT.gz ]; then
     INDIR=input_cds
-    ls -U $INDIR | grep _2021-08-30 | parallel -J $CPU ./scripts/calculate_codon_freq.py $INDIR/{} -v -o $SCRATCH/{.}.$EXT
+    ls -U $INDIR | parallel -J $CPU ./scripts/calculate_codon_freq.py $INDIR/{} -o $SCRATCH/{.}.$EXT
     FIRST=$(ls -U $SCRATCH/*.$EXT | head -n 1)
     head -n 1 $FIRST > bigquery/$EXT
-    ls -U $SCRATCH | grep "$EXT" | xargs -I {} sh -c "tail -n +2 $SCRATCH/{} >> bigquery/$EXT.csv"
+    ls -U $SCRATCH | grep "$EXT" | xargs -I {} sh -c "tail -n +2 $SCRATCH/{} >> bigquery/$EXT"
     pigz -f bigquery/$EXT
 fi
-EXT=gene_info.csv
+
+EXT=gene_info
 if [ ! -s bigquery/$EXT.gz ]; then
     INDIR=gff3
     # do these in parallel
-    time ls -U $INDIR | grep \.gff3 | parallel -j $CPU ./scripts/build_genestats_bigquery.py $INDIR/{} --dnaext .fasta --outdir $SCRATCH/{.}.${EXT}    
+    time ls -U $INDIR | grep \.gff3 | parallel -j $CPU ./scripts/build_genestats_bigquery.py $INDIR/{} --dnaext fasta --outdir $SCRATCH/{.}.${EXT}    
     FIRST=$(ls -Ud $SCRATCH/*.${EXT} | head -n 1)
     for FILE in $(ls $FIRST/*.csv); do
         FNAME=$(basename $FILE)
         head -n 1 $FILE > bigquery/$FNAME
-        ls -U $SCRATCH/ | grep "$EXT" | xargs -I {} sh -c "tail -n +2 $SCRATCH/{}/${FNAME} >> bigquery/${FNAME}"
+        ls -Ud $SCRATCH/*.${EXT} | xargs -I {} sh -c "tail -n +2 {}/${FNAME} >> bigquery/${FNAME}"
         pigz -f bigquery/${FNAME}
     done
 
