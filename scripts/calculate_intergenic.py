@@ -61,6 +61,7 @@ def parse_gff_get_distances(gff, debug=False):
                     print(f"WARNING: Duplicate gene ID {gene_id} in {gff}")
                     continue
                 genedata[gene_id] = {
+                    "name": group_data.get("Name", gene_id),
                     "chrom": fields[0],
                     "start": fstart,
                     "end": fend,
@@ -78,14 +79,18 @@ def parse_gff_get_distances(gff, debug=False):
         
     last_gene = []
     last_gene_name = ""
+    last_gene_id = ""
     distances = []
-    for gene_name in sorted(genedata.keys(), key=lambda x: (genedata[x]["chrom"],genedata[x]["start"])):
-        gene = genedata[gene_name]
+    for gene_id in sorted(genedata.keys(), key=lambda x: (genedata[x]["chrom"],genedata[x]["start"])):
+        gene = genedata[gene_id]
+        gene_name = genedata[gene_id]["name"]
+        
         if last_gene and last_gene["chrom"] == gene["chrom"]:
             distance = gene["start"] - last_gene["end"]
             distances.append([last_gene_name, gene_name, distance])
         last_gene = gene
         last_gene_name = gene_name
+        last_gene_id = gene_id
 
     return distances
 
