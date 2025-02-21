@@ -113,13 +113,13 @@ def tmhmm(indir="results/function/tmhmm",force=False):
 
                         writer.writerow(newrow)
 
-def wolfpsort(indir="results/function/wolfpsort",force=False):
+def wolfpsort(indir="results/function/wolfpsort",force=False,onlybest=True):
     outfile = os.path.join(outdir,os.path.basename(indir) + ".csv")
     if (os.path.exists(outfile) or os.path.exists(outfile + ".gz") ) and not force:
         return
     with open(outfile, "w", newline='') as of:
         writer = csv.writer(of)
-        writer.writerow(['species_prefix','protein_id','len','ExpAA','First60','PredHel','Topology'])
+        writer.writerow(['species_prefix','protein_id','localization','score'])
         for file in os.listdir(indir):
             if file.endswith(".wolfpsort.results.txt.gz"):
                 with gzip.open(os.path.join(indir,file), "rt") as infh:                    
@@ -133,6 +133,8 @@ def wolfpsort(indir="results/function/wolfpsort",force=False):
                             (code,score) = scoring.split(' ')                        
                             newrow = [prefix,id,code,score]                        
                             writer.writerow(newrow)
+                            if onlybest:
+                                break
 
 
 def targetp(indir="results/function/targetp",force=False):
@@ -143,10 +145,34 @@ def kegg(indir="results/function/kegg",force=False):
 
 def busco(indir="results/stats/busco",force=False):
     print('not running yet')
+
+def pfam(indir="results/function/pfam",force=False):
+    outfile = os.path.join(outdir,os.path.basename(indir) + ".csv")
+    if (os.path.exists(outfile) or os.path.exists(outfile + ".gz") ) and not force:
+        return
+    with open(outfile, "w", newline='') as of:
+        writer = csv.writer(of)
+        writer.writerow(['species_prefix','protein_id','pfam_id','full_seq_e_value','full_seq_score',
+                        'full_seq_bias','domain_num','domain_num_of','domain_c_evalue',
+                        'domain_i_evalue','domain_score','domain_bias','hmm_from',
+                        'hmm_to','ali_from','ali_to','env_from','env_to','acc'])
+        for file in os.listdir(indir):
+            if file.endswith(".domtblout.gz"):
+                with gzip.open(os.path.join(indir,file), "rt") as infh:
+                    for line in infh:
+                        if line.startswith('#'):
+                            continue
+                        row = line.strip().split(None,22)                        
+                        prefix = row[3].split('_')[0]
+                        newrow = [prefix, row[3],row[0]]
+                        newrow.extend(row[6:-1])
+                        writer.writerow(newrow)
+    
 merops()
 cazy_overview()
 cazy_hmm()
 signalp()
+pfam()
 #kegg()
 
 tmhmm()
