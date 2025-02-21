@@ -31,7 +31,7 @@ if [ ! -s bigquery/$EXT.gz ]; then
 fi
 
 EXT=gene_info
-if [ ! -s bigquery/$EXT.gz ]; then
+if [ ! -s bigquery/$EXT.csv.gz ]; then
     INDIR=gff3
     # do these in parallel
     time ls -U $INDIR | grep \.gff3 | parallel -j $CPU ./scripts/build_genestats_bigquery.py $INDIR/{} --dnaext fasta --outdir $SCRATCH/{.}.${EXT}    

@@ -22,7 +22,7 @@ export -f do_query
 EXT=gene_pairwise_distances.csv
 OUTDIR=bigquery
 BINSIZE=100
-if [ ! -s $OUTDIR/$EXT ]; then
+if [ ! -s $OUTDIR/$EXT.gz ]; then
     INDIR=gff3
     COUNT=$(ls $INDIR | wc -l)
     echo "starting -->"
@@ -38,6 +38,7 @@ if [ ! -s $OUTDIR/$EXT ]; then
     done
     date
     echo "--> Finished"
+    pigz -f $OUTDIR/$EXT
     # this should be fast enough (10 hrs for 5800 files)
     #time ./scripts/calculate_intergenic.py --gff_dir gff3 
 fi
