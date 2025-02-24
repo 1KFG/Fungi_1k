@@ -1,5 +1,5 @@
 #!/usr/bin/bash -l
-#SBATCH -N 1 -n 1 -c 64 --mem 96gb -p hpcc_default
+#SBATCH -N 1 -n 1 -c 96 --mem 96gb -p short
 #SBATCH --job-name=genedist_stats
 #SBATCH --output=logs/genedist_seqstats.log
 
