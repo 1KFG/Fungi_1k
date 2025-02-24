@@ -6,6 +6,7 @@ import hashlib
 import os
 import sys
 import time
+import re
 from contextlib import ExitStack
 
 def parse_gff_get_distances(gff, debug=False):
@@ -173,7 +174,11 @@ def main():
             species = None
             for d in genedata:
                 if not species:
-                    (species) = d[0].split("_")[0]
+                    m = re.match(r'(\w+)_(\d+)$',d[0])
+                    if m:
+                        species = m.group(1)
+                    else:
+                        species = filename_stem
                 row = [species] + d
                 genecsv.writerow(row)
 

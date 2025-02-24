@@ -148,12 +148,19 @@ def parse_gff(gff, dna="", codon_table=1, debug=False):
                     "exon": [],
                     "CDS": [],
                     "intron": [],
+                    "CDS_seq": {
+                      "id": f"{gene_name}.mRNA",
+                      "length": None,
+                      "md5checksum": None,
+                      "cdsseq": None,
+                    },
                     "protein": {
-#                        "id": f"{mrna_id}.protein",
-                        "id": f"{gene_name}.protein",
+#                       # "id": f"{mrna_id}.protein",
+                        "id": f"{gene_name}",
                         "parent": mrna_id,
                         "length": None,
                         "md5checksum": None,
+                        "pepseq": None,
                     },
                 }
             elif ftype in ("exon", "CDS"):
@@ -350,10 +357,16 @@ def parse_gff(gff, dna="", codon_table=1, debug=False):
                 proteinseq = Seq.translate(Seq(str(CDS_sequence)), table=codon_table)
                 if proteinseq[-1:] == "*":
                     proteinseq = proteinseq[:-1]  # strip trailing stop codon.
+                    CDS_sequence = CDS_sequence[:-3]
                 transcript["protein"]["length"] = len(str(proteinseq))
                 transcript["protein"]["pepseq"] = str(proteinseq)
                 transcript["protein"]["md5checksum"] = hashlib.md5(
                     str(proteinseq).encode()
+                ).hexdigest()
+                transcript["CDS_seq"]["cdsseq"] = CDS_sequence
+                transcript["CDS_seq"]["length"] = len(CDS_sequence)
+                transcript["CDS_seq"]["md5checksum"] = hashlib.md5(
+                    str(CDS_sequence).encode()
                 ).hexdigest()
 
     # fix this as JGI GFF doens't have tRNA but can use trnscan results
@@ -419,6 +432,11 @@ def parse_gff(gff, dna="", codon_table=1, debug=False):
                         "has_stop_codon": "NULL",
                         "exon": [],
                         "intron": [],
+                        "CDS_seq": {
+                          'length': None,
+                          'cdsseq': None,
+                          'md5checksum': None,
+                        }
                     }
                 elif ftype == 'exon':
                     trna_id = f'{species}.{group_data["Parent"]}'
@@ -513,7 +531,7 @@ def main():
         genecsv.writerow(
             [
                 "gene_id",
-                "species_prefix",
+                "LOCUSTAG",
                 "chrom",
                 "start",
                 "end",
@@ -533,6 +551,9 @@ def main():
                 "is_partial",
                 "has_start_codon",
                 "has_stop_codon",
+                "CDS_sequence",
+                "CDS_length",
+                "md5checksum",
             ]
         )
         trnacsv.writerow(
@@ -585,7 +606,7 @@ def main():
         )
         pepcsv.writerow(
             [
-                "protein_id",
+                "gene_id",
                 "transcript_id",
                 "length",
                 "peptide",
@@ -627,7 +648,12 @@ def main():
             for geneid, gene in genedata.items():
                 genename = gene["gene_name"]
                 if not species:
-                    (species) = genename.split("_")[0]
+                    m = re.match(r'(\w+)_(\d+)$',genename)
+                    if m:
+                      species = m.group(1)
+                    else:
+                      print(f"WARNING: No species ID parsed, got it from fstem {fstem} in {gff_file_l}")
+                      species = fstem
                 genecsv.writerow(
                     [
                         genename,
@@ -650,6 +676,7 @@ def main():
                 # consider saving space by only encoding strand on the gene level
                 for transcriptid, transcript in gene["transcripts"].items():
                     transcriptname = transcript["transcript_name"]
+                    
                     mrnacsv.writerow(
                         [
                             genename,
@@ -661,6 +688,9 @@ def main():
                             transcript["is_partial"],
                             transcript["has_start_codon"],
                             transcript["has_stop_codon"],
+                            transcript["CDS_seq"]["cdsseq"],
+                            transcript["CDS_seq"]["length"],
+                            transcript["CDS_seq"]["md5checksum"],
                         ]
                     )
                     if "exon" in transcript:

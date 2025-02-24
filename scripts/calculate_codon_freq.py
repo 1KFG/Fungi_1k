@@ -7,6 +7,7 @@ import argparse
 import csv
 import os
 import time
+import re
 
 
 def validate(seq, alphabet="ACGT"):
@@ -21,7 +22,11 @@ def calculate_codon_frequencies(fasta_file):
     species = None
     for record in SeqIO.parse(fasta_file, "fasta"):
         if not species:
-            species = record.id.split("_")[0]
+            m = re.match(r'(\w+)_(\d+)$',record.id)
+            if m:
+                species = m.group(1)
+            else:
+                (species,ext) = os.path.splitext(fasta_file)
         seqstr = str(record.seq).upper()
         codon_count = int(len(seqstr) / 3) # round down to the nearest codon
         for i in range(0, 3 * codon_count,3):

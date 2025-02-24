@@ -10,6 +10,10 @@ library(paletteer)
 library(cowplot)
 library(ggfortify)
 library(ggpubr)
+library(microViz)
+
+kelly <- distinct_palette(pal = "kelly")
+scales::show_col(kelly)
 
 DBDIR="functionalDB"
 DBNAME="function.duckdb"
@@ -27,9 +31,10 @@ SELECT sp.*, stats.GC_PERCENT, stats.TOTAL_LENGTH, gene_count, mean_gene_length
 FROM 
 species as sp,
 asm_stats as stats,
-(SELECT LOCUSTAG, count(*) as gene_count, MEAN(length) as mean_gene_length
-FROM gene_proteins 
-GROUP BY LOCUSTAG) as gp
+(SELECT LOCUSTAG, count(gene_proteins.*) as gene_count, MEAN(gene_proteins.length) as mean_gene_length
+FROM gene_proteins, gene_info
+WHERE gene_info.gene_id = gene_proteins.gene_id
+GROUP BY gene_info.LOCUSTAG) as gp
 WHERE 
 sp.LOCUSTAG = stats.LOCUSTAG and gp.LOCUSTAG = sp.LOCUSTAG"
 
@@ -155,7 +160,7 @@ zoopag <- asmstat_res %>% filter(PHYLUM=="Zoopagomycota")
 
  chytrid <- asmstat_res %>% filter(PHYLUM=="Chytridiomycota")
   countglen_p <- ggplot(chytrid,aes(x=gene_count, y=mean_gene_length)) +
-    geom_point(aes(color=CLASS, fill=CLASS,shape=SUBPHYLUM),size=2,alpha=0.7) + 
+    geom_point(aes(color=CLASS, fill=CLASS),size=2,alpha=0.7) + 
     geom_smooth(method = "lm", se = FALSE,color="black",formula = y ~ x) + 
     scale_colour_brewer(palette = "Set2") +
   ylab("Gene Length") +
@@ -213,6 +218,8 @@ head(codonfreq_res)
 
 aafreq_res <- dbGetQuery(con, aafreq_sql)
 head(aafreq_res)
+
+
 aafreq_wide <- aafreq_res %>% select(c(PHYLUM,SUBPHYLUM,CLASS,GENUS,SPECIES,GC_PERCENT,TOTAL_LENGTH,LOCUSTAG,amino_acid, frequency)) %>% 
   filter(! is.na(PHYLUM)) %>% 
   pivot_wider(id_cols = c(PHYLUM,SUBPHYLUM,CLASS,GENUS,SPECIES,GC_PERCENT,TOTAL_LENGTH,LOCUSTAG), 
@@ -221,9 +228,14 @@ aa_pcadat <- as.matrix(aafreq_wide %>% select(-c(PHYLUM,SUBPHYLUM,CLASS,GENUS,SP
 rownames(aa_pcadat) <- aafreq_wide$LOCUSTAG
 aa_pca_res <- prcomp(aa_pcadat, scale. = TRUE)
 
+nb.cols <- length(unique(aafreq_res$PHYLUM))
+mycolors <- colorRampPalette(brewer.pal(9, "Set1"))(nb.cols)
+
 aa_pcaplot<- autoplot(aa_pca_res, data = aafreq_wide, colour = 'PHYLUM', alpha=0.7,
                       label = FALSE, label.size = 3) + 
-  theme_cowplot(12) + scale_colour_brewer(palette = "Set1") 
+  theme_cowplot(12) + 
+  scale_colour_manual(values = mycolors) +
+  scale_fill_manual(values = mycolors)
 aa_pcaplot
 ggsave(file.path(statsplotdir,"PCA_aa_freq_all.pdf"),aa_pcaplot,width=14,height=14)
 
@@ -234,7 +246,9 @@ aa_pca_factors <- aafreq_wide %>% left_join(aa_pcafactors,by="LOCUSTAG")
 fit <- lm(PC1~GC_PERCENT,aa_pca_factors%>%select(c(GC_PERCENT,PC1)))
 
 aa_GC_plot <- ggplot(aa_pca_factors,aes(x=GC_PERCENT,y=PC1)) + geom_point(aes(color=PHYLUM,fill=PHYLUM)) + 
-  theme_cowplot(12) + scale_colour_brewer(palette = "Set1") + 
+  theme_cowplot(12) + 
+  scale_colour_manual(values = mycolors) +
+  scale_fill_manual(values = mycolors) +
   geom_smooth(method = "lm", se = FALSE,color="black",formula = y ~ x) + 
   xlab("Genome GC %") +
   ylab("AA Freq PC1") + 
@@ -254,7 +268,7 @@ aa_pca_factors$PHYLUM <- factor(aa_pca_factors$PHYLUM)
 aa_GC_plot_f <- ggplot(aa_pca_factors,aes(x=GC_PERCENT,y=PC1)) + geom_point(aes(color=SUBPHYLUM)) + 
   theme_cowplot(12) + 
   geom_smooth(method = "lm", se = FALSE,color="black",formula = y ~ x) + 
-  xlab("Genome GC %") +
+    xlab("Genome GC %") +
   ylab("AA Freq PC1") + 
   ggtitle("GC % vs AA Freq PC1") +
   theme(legend.position="bottom")  + facet_wrap(~PHYLUM )
@@ -268,12 +282,20 @@ codonfreq_wide <- codonfreq_res %>% select(c(PHYLUM,SUBPHYLUM,CLASS,GENUS,SPECIE
               names_from = codon, values_from = frequency)
 codon_pcadat <- as.matrix(codonfreq_wide %>% select(-c(PHYLUM,SUBPHYLUM,CLASS,GENUS,SPECIES,GC_PERCENT,TOTAL_LENGTH,LOCUSTAG)))
 rownames(codon_pcadat) <- codonfreq_wide$LOCUSTAG
+codon_pcadat[!is.finite(codon_pcadat)] <- 0
 codon_pca_res <- prcomp(codon_pcadat, scale. = TRUE)
 
-codon_pcaplot<- autoplot(codon_pca_res, data = codonfreq_wide, colour = 'PHYLUM', alpha=0.7, 
-                         label = FALSE, label.size = 3) + 
-  theme_cowplot(12) + scale_colour_brewer(palette = "Set1") 
+nb.cols <- length(unique(codonfreq_wide$PHYLUM))
+mycolors <- colorRampPalette(brewer.pal(9, "Set1"))(nb.cols)
 
+codon_pcaplot<- autoplot(codon_pca_res, data = codonfreq_wide, 
+                         colour = 'PHYLUM', alpha=0.7, 
+                         label = FALSE, label.size = 3) + 
+  theme_cowplot(12) + 
+  scale_colour_manual(values = mycolors) +
+  scale_fill_manual(values = mycolors) 
+  
+codon_pcaplot
 ggsave(file.path(statsplotdir,"PCA_codon_freq_all.pdf"),codon_pcaplot,width=14,height=14)
 
 codon_pcafactors <- as_tibble(rownames_to_column(data.frame(codon_pca_res$x),var="LOCUSTAG"))
@@ -281,8 +303,15 @@ codon_pcafactors <- as_tibble(rownames_to_column(data.frame(codon_pca_res$x),var
 codon_pca_factors <- codonfreq_wide %>% left_join(codon_pcafactors,by="LOCUSTAG")
 fit <- lm(PC1~GC_PERCENT,codon_pca_factors%>%select(c(GC_PERCENT,PC1)))
 cor2 <- cor(codon_pca_factors$GC_PERCENT,codon_pca_factors$PC1)
-codon_GC_plot <- ggplot(codon_pca_factors,aes(x=GC_PERCENT,y=PC1)) + geom_point(aes(color=PHYLUM,fill=PHYLUM)) + 
-  theme_cowplot(12) + scale_colour_brewer(palette = "Set1") + 
+
+nb.cols <- length(unique(codon_pca_factors$PHYLUM))
+mycolors <- colorRampPalette(brewer.pal(9, "Set1"))(nb.cols)
+
+codon_GC_plot <- ggplot(codon_pca_factors,aes(x=GC_PERCENT,y=PC1)) + 
+  geom_point(aes(color=PHYLUM,fill=PHYLUM)) + 
+  theme_cowplot(12) + 
+  scale_colour_manual(values = mycolors) +
+  scale_fill_manual(values = mycolors) +
   geom_smooth(method = "lm", se = FALSE,color="black",formula = y ~ x) + 
   xlab("Genome GC %") +
   ylab("Codon Freq PC1") + 
@@ -314,8 +343,10 @@ SELECT sp.*, trna.codon as trna_codon, trna.trna_codon_count, trnatotal.trna_gen
        trna.trna_codon_count/trnatotal.trna_gene_count as relative_trna_abundance
 FROM 
 species sp,
-(SELECT LOCUSTAG, codon, count(*) as trna_codon_count from gene_trna GROUP BY (LOCUSTAG,codon)) as trna,
-(SELECT LOCUSTAG, count(*) as trna_gene_count from gene_trna GROUP BY (LOCUSTAG)) as trnatotal
+(SELECT LOCUSTAG, codon, count(*) as trna_codon_count from gene_trna, gene_info WHERE gene_info.gene_id = gene_trna.gene_id 
+GROUP BY (LOCUSTAG,codon)) as trna,
+(SELECT LOCUSTAG, count(*) as trna_gene_count from gene_trna, gene_info WHERE gene_info.gene_id = gene_trna.gene_id 
+GROUP BY (LOCUSTAG)) as trnatotal
 
 WHERE 
 sp.LOCUSTAG = trna.LOCUSTAG AND sp.LOCUSTAG = trnatotal.LOCUSTAG"
@@ -323,7 +354,8 @@ sp.LOCUSTAG = trna.LOCUSTAG AND sp.LOCUSTAG = trnatotal.LOCUSTAG"
 trnacodonfreq_res <- dbGetQuery(con, trnacodon_abundance_sql)
 head(trnacodonfreq_res)
 
-trna_codon_freq <- trnacodonfreq_res %>% select(c(LOCUSTAG,trna_codon,trna_codon_count,trna_gene_count,relative_trna_abundance)) %>% 
+trna_codon_freq <- trnacodonfreq_res %>% 
+  select(c(LOCUSTAG,trna_codon,trna_codon_count,trna_gene_count,relative_trna_abundance)) %>% 
   left_join(codonfreq_res,by=c("trna_codon" = "codon",
                                "LOCUSTAG" = "species_prefix")) 
 head(trna_codon_freq %>% arrange(LOCUSTAG,trna_codon))
@@ -333,11 +365,16 @@ trna_codon_freq <- trna_codon_freq %>% filter(!is.na(PHYLUM))
 
 # frequency is codon frequency from CDS counts
 # codoncount is the numner of 
+nb.cols <- length(unique(trna_codon_freq$PHYLUM))
+mycolors <- colorRampPalette(brewer.pal(9, "Set1"))(nb.cols)
+
 trnacodonabun_p <- ggplot(trna_codon_freq %>% arrange(trna_codon, PHYLUM, SUBPHYLUM) %>%
                             filter(! is.na(frequency)),
                           aes(color=PHYLUM,fill=PHYLUM)) + 
   geom_point(aes(x=relative_trna_abundance,y=frequency)) + theme_cowplot(12)  + facet_wrap(~trna_codon,nrow=8,ncol=8) +
-  scale_colour_brewer(palette = "Set1") + ylab("codon abundance") + xlab("relative tRNA abundance")
+  scale_colour_manual(values = mycolors) +
+  scale_fill_manual(values = mycolors) +
+  ylab("codon abundance") + xlab("relative tRNA abundance")
 
 trnacodonabun_p
 
@@ -347,8 +384,10 @@ for (phylum in unique(trna_codon_freq$PHYLUM)) {
   i_trnacodonabun_p <- ggplot(trna_codon_freq %>% filter(PHYLUM==phylum) %>% filter(! is.na(frequency)),
                           aes(color=SUBPHYLUM,fill=SUBPHYLUM)) + 
   geom_point(aes(x=relative_trna_abundance,y=frequency)) + theme_cowplot(12)  + facet_wrap(~trna_codon,nrow=8,ncol=8) +
-  scale_colour_brewer(palette = "Set1") + ylab("codon abundance") + xlab("relative tRNA abundance") + 
-    ggtitle(sprintf("%s tRNA abundance plot",phylum))
+  scale_colour_manual(values = mycolors) +
+  scale_fill_manual(values = mycolors) + ylab("codon abundance") + xlab("relative tRNA abundance") + 
+  ggtitle(sprintf("%s tRNA abundance plot",phylum))
+  
   ggsave(file.path(statsplotdir,sprintf("tRNA_abundance_codon_frequency_%s.pdf",phylum)),i_trnacodonabun_p,width=20,height=20)
 }
 

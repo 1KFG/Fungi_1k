@@ -8,6 +8,7 @@ library(ggplot2)
 library(RColorBrewer)
 library(cowplot)
 
+pdf("plots/CAZY_merops_Ratio.pdf")
 # to use a database file already created by 
 con <- dbConnect(duckdb(), dbdir="functionalDB/function.duckdb", read_only = TRUE)
 

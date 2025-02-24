@@ -16,8 +16,13 @@ def calculate_aa_frequencies(fasta_file):
     species = None
     for record in SeqIO.parse(fasta_file, "fasta"):
         if not species:
-            species = record.id.split("_")[0]
+            m = re.match(r'(\w+)_(\d+)$',record.id)
+            if m:
+                species = m.group(1)
+            else:
+                (species,ext) = os.path.splitext(fasta_file)
         seqstrnoStop = re.sub('\*','',str(record.seq))
+        seqstrnoStop = seqstrnoStop.upper()
         aa_counter.update(seqstrnoStop)
         total_aa += len(seqstrnoStop)
 
