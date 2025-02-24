@@ -10,10 +10,6 @@ library(paletteer)
 library(cowplot)
 library(ggfortify)
 library(ggpubr)
-library(microViz)
-
-kelly <- distinct_palette(pal = "kelly")
-scales::show_col(kelly)
 
 DBDIR="functionalDB"
 DBNAME="function.duckdb"
@@ -22,7 +18,7 @@ dir.create(file.path(plotdir),showWarnings = FALSE)
 statsplotdir = file.path(plotdir,"asm_seqstats")
 dir.create(statsplotdir, showWarnings = FALSE)
 
-pdf(file.path(statsplotdir,"plot_misc.pdf"))
+pdf(file.path(statsplotdir,"1kfg_plot_misc.pdf"))
 # to use a database file already created by 
 con <- dbConnect(duckdb(), dbdir=file.path(DBDIR,DBNAME), read_only = TRUE)
 
@@ -71,31 +67,90 @@ len_p <- ggplot(sumAsm) + geom_bar(
 
 len_p
 
-ggsave(file.path(statsplotdir,"genome_size_order.pdf"),len_p,width=24,height=10)
+ggsave(file.path(statsplotdir,"1kfg_genome_size_order.pdf"),len_p,width=24,height=10)
+
+
+nb.cols <- length(unique(asmstat_res$PHYLUM))
+mycolors <- colorRampPalette(brewer.pal(8, "Set1"))(nb.cols)
+
+# aa len vs gene count
+count_glen_p <- ggplot(asmstat_res) +
+  geom_point(aes(x=gene_count, y=mean_gene_length,color=PHYLUM, fill=PHYLUM),size=1.5,alpha=0.5) + 
+  scale_colour_manual(values = mycolors) +
+  scale_fill_manual(values = mycolors) +
+  ylab("Protein Length") +
+  xlab("Gene count") + ggtitle("Gene Count vs Mean Protein length") +
+  theme_cowplot(12) + theme(legend.position="bottom") + scale_x_log10() 
+count_glen_p
 
 nb.cols <- length(unique(asmstat_res$SUBPHYLUM))
-mycolors <- colorRampPalette(brewer.pal(8, "Dark2"))(nb.cols)
+mycolors <- colorRampPalette(brewer.pal(8, "Set2"))(nb.cols)
 
-count_glen_p <- ggplot(asmstat_res) +
+# aa len vs gene count - by subphylum
+count_glen_sp <- ggplot(asmstat_res) +
   geom_point(aes(x=gene_count, y=mean_gene_length,color=SUBPHYLUM, fill=SUBPHYLUM),size=1.5,alpha=0.5) + 
   scale_colour_manual(values = mycolors) +
   scale_fill_manual(values = mycolors) +
-  ylab("Gene Length") +
-  xlab("Gene count (Mb)") + ggtitle("Gene Count vs Mean Gene length") +
+  ylab("Protein Length") +
+  xlab("Gene count") + ggtitle("Gene Count vs Mean Protein length") +
+  theme_cowplot(12) + theme(legend.position="bottom") + scale_x_log10() 
+count_glen_sp
+
+pg <- plot_grid(count_glen_p, count_glen_sp, nrow = 2)
+ggsave(file.path(statsplotdir,"1kfg_genecount_aa_length.pdf"),pg,width=15,height=10)
+
+# aa len vs gene count - truncate 2 big counts
+nb.cols <- length(unique(asmstat_res$PHYLUM))
+mycolors <- colorRampPalette(brewer.pal(8, "Set1"))(nb.cols)
+
+count_glen_p <- ggplot(asmstat_res %>% filter(gene_count < 100000 & asmstat_res$PHYLUM != "Olpidiomycota")) +
+  geom_point(aes(x=gene_count, y=mean_gene_length,color=PHYLUM, fill=PHYLUM),size=1.5,alpha=0.5) + 
+  scale_colour_manual(values = mycolors) +
+  scale_fill_manual(values = mycolors) +
+  ylab("Protein Length") +
+  xlab("Gene count") + ggtitle("Gene Count vs Mean Protein length") +
   theme_cowplot(12) + theme(legend.position="bottom") + scale_x_log10() 
 count_glen_p
-ggsave(file.path(statsplotdir,"genecount_gene_length.pdf"),count_glen_p,width=15,height=10)
+
+nb.cols <- length(unique(asmstat_res$SUBPHYLUM))
+mycolors <- colorRampPalette(brewer.pal(8, "Set2"))(nb.cols)
+
+count_glen_sp <- ggplot(asmstat_res %>% filter(gene_count < 100000)) +
+  geom_point(aes(x=gene_count, y=mean_gene_length,color=SUBPHYLUM, fill=SUBPHYLUM),size=1.5,alpha=0.5) + 
+  scale_colour_manual(values = mycolors) +
+  scale_fill_manual(values = mycolors) +
+  ylab("Protein Length") +
+  xlab("Gene count") + ggtitle("Gene Count vs Mean Protein length") +
+  theme_cowplot(12) + theme(legend.position="bottom") + scale_x_log10() 
+count_glen_sp
+pg <- plot_grid(count_glen_p, count_glen_sp, nrow = 2)
+ggsave(file.path(statsplotdir,"1kfg_genecount_truncate_aa_length.pdf"),pg,width=15,height=15)
 
 phylum_countglen_p <- ggplot(asmstat_res) +
   geom_point(aes(x=gene_count, y=mean_gene_length,color=SUBPHYLUM, fill=SUBPHYLUM),size=1.5,alpha=0.5) + 
   scale_colour_manual(values = mycolors) +
   scale_fill_manual(values = mycolors) +
-  ylab("Gene Length") +
-  xlab("Gene count (Mb)") + ggtitle("Gene Count vs Mean Gene length") +
-  theme_cowplot(12) + theme(legend.position="bottom") + scale_x_log10() + facet_wrap(~PHYLUM)
+  ylab("Protein Length") +
+  xlab("Gene count") + ggtitle("Gene Count vs Mean Protein length") +
+  theme_cowplot(12) + theme(legend.position="bottom") + scale_x_log10() + facet_wrap(~PHYLUM,ncol=3)
 
 phylum_countglen_p
-ggsave(file.path(statsplotdir,"genecount_gene_length_facet.pdf"),phylum_countglen_p,width=15,height=10)
+ggsave(file.path(statsplotdir,"1kfg_genecount_aa_length_facet.pdf"),phylum_countglen_p,width=15,height=15)
+
+nb.cols <- length(unique(asmstat_res$SUBPHYLUM))
+mycolors <- colorRampPalette(brewer.pal(9, "Set1"))(nb.cols)
+
+phylum_genomelen_glen_p <- ggplot(asmstat_res %>% filter( ! (PHYLUM %in% c("Blastocladiomycota", "Olpidiomycota", "Cryptomycota")))) +
+  geom_point(aes(x=TOTAL_LENGTH, y=mean_gene_length,color=SUBPHYLUM, fill=SUBPHYLUM),size=1.5,alpha=0.5) + 
+  geom_smooth(method = "lm", se = FALSE,color="black",aes(x=TOTAL_LENGTH, y=mean_gene_length),formula = y ~ x) +
+  scale_colour_manual(values = mycolors) +
+  scale_fill_manual(values = mycolors) +
+  ylab("Protein Length") +
+  xlab("Genome Size (Mb)") + ggtitle("Genome Size vs Mean Protein length") +
+  theme_cowplot(12) + theme(legend.position="bottom") + scale_x_log10() + facet_wrap(~PHYLUM)
+
+phylum_genomelen_glen_p
+ggsave(file.path(statsplotdir,"1kfg_genomesize_aa_length_facet.pdf"),phylum_genomelen_glen_p,width=15,height=10)
 
 basidio <- asmstat_res %>% filter(PHYLUM=="Basidiomycota")
 nb.cols <- length(unique(basidio$CLASS))
@@ -106,12 +161,12 @@ basidio_countglen_p <- ggplot(basidio) +
   geom_smooth(method = "lm", se = FALSE,color="black",aes(x=gene_count, y=mean_gene_length),formula = y ~ x) + 
   scale_colour_manual(values = mycolors) +
   scale_fill_manual(values = mycolors) +
-  ylab("Gene Length") +
-  xlab("Gene count (Mb)") + ggtitle("Gene Count vs Mean Gene length") +
+  ylab("Protein Length") +
+  xlab("Gene count") + ggtitle("Gene Count vs Mean Protein length") +
   theme_cowplot(12) + theme(legend.position="bottom") + scale_x_log10() + facet_wrap(~SUBPHYLUM)
 
 basidio_countglen_p
-ggsave(file.path(statsplotdir,"genecount_gene_length_basidio.pdf"),basidio_countglen_p,width=15,height=10)
+ggsave(file.path(statsplotdir,"1kfg_genecount_aa_length_basidio.pdf"),basidio_countglen_p,width=15,height=10)
 
 # could make this a function + lapply
 for (subphylum in unique(basidio$SUBPHYLUM))
@@ -122,12 +177,12 @@ for (subphylum in unique(basidio$SUBPHYLUM))
   geom_point(aes(color=CLASS, fill=CLASS),size=1.5,alpha=0.7) + 
     geom_smooth(method = "lm", se = FALSE,color="black",formula = y ~ x) + 
     scale_colour_brewer(palette = "Dark2") +
-  ylab("Gene Length") +
-  xlab("Gene count (Mb)") + ggtitle(sprintf("%s: Gene Count vs Mean Gene length",subphylum)) +
+  ylab("Protein Length") +
+  xlab("Gene count") + ggtitle(sprintf("%s: Gene Count vs Mean Protein length",subphylum)) +
   theme_cowplot(12) + theme(legend.position="bottom") + scale_x_log10()
 
   countglen_p
-  ggsave(file.path(statsplotdir,sprintf("genecount_gene_length_basidio_%s.pdf",subphylum)),countglen_p,width=8,height=8)
+  ggsave(file.path(statsplotdir,sprintf("1kfg_genecount_aa_length_basidio_%s.pdf",subphylum)),countglen_p,width=8,height=8)
 }
 
 mucoro <- asmstat_res %>% filter(PHYLUM=="Mucoromycota")
@@ -136,12 +191,12 @@ mucoro <- asmstat_res %>% filter(PHYLUM=="Mucoromycota")
     geom_point(aes(color=CLASS, fill=CLASS,shape=SUBPHYLUM),size=2,alpha=0.7) + 
     geom_smooth(method = "lm", se = FALSE,color="black",formula = y ~ x) + 
     scale_colour_brewer(palette = "Set2") +
-  ylab("Gene Length") +
-  xlab("Gene count (Mb)") + ggtitle(sprintf("%s: Gene Count vs Mean Gene length",unique(mucoro$PHYLUM))) +
+  ylab("Protein Length") +
+  xlab("Gene count (Mb)") + ggtitle(sprintf("%s: Gene Count vs Mean Protein length",unique(mucoro$PHYLUM))) +
   theme_cowplot(12) + theme(legend.position="bottom") + scale_x_log10()
 
   countglen_p
-  ggsave(file.path(statsplotdir,"genecount_gene_length_mucoromycota.pdf"),countglen_p,width=12,height=8)
+  ggsave(file.path(statsplotdir,"1kfg_genecount_aa_length_mucoromycota.pdf"),countglen_p,width=12,height=8)
 
 zoopag <- asmstat_res %>% filter(PHYLUM=="Zoopagomycota")
 # switch this around and just plot all Zooags together
@@ -150,12 +205,12 @@ zoopag <- asmstat_res %>% filter(PHYLUM=="Zoopagomycota")
   geom_point(aes(color=CLASS, fill=CLASS,shape=SUBPHYLUM),size=2,alpha=0.7) + 
     geom_smooth(method = "lm", se = FALSE,color="black",formula = y ~ x) + 
     scale_colour_brewer(palette = "Set2") +
-  ylab("Gene Length") +
-  xlab("Gene count (Mb)") + ggtitle(sprintf("%s: Gene Count vs Mean Gene length",unique(zoopag$PHYLUM))) +
+  ylab("Protein Length") +
+  xlab("Gene count (Mb)") + ggtitle(sprintf("%s: Gene Count vs Mean Protein length",unique(zoopag$PHYLUM))) +
   theme_cowplot(12) + theme(legend.position="bottom") + scale_x_log10()
 
   countglen_p
-  ggsave(file.path(statsplotdir,"genecount_gene_length_zoopag.pdf"),countglen_p,width=8,height=8)
+  ggsave(file.path(statsplotdir,"1kfg_genecount_aa_length_zoopag.pdf"),countglen_p,width=8,height=8)
 
 
  chytrid <- asmstat_res %>% filter(PHYLUM=="Chytridiomycota")
@@ -163,12 +218,12 @@ zoopag <- asmstat_res %>% filter(PHYLUM=="Zoopagomycota")
     geom_point(aes(color=CLASS, fill=CLASS),size=2,alpha=0.7) + 
     geom_smooth(method = "lm", se = FALSE,color="black",formula = y ~ x) + 
     scale_colour_brewer(palette = "Set2") +
-  ylab("Gene Length") +
-  xlab("Gene count (Mb)") + ggtitle(sprintf("%s: Gene Count vs Mean Gene length",unique(chytrid$PHYLUM))) +
+  ylab("Protein Length") +
+  xlab("Gene count (Mb)") + ggtitle(sprintf("%s: Gene Count vs Mean Protein length",unique(chytrid$PHYLUM))) +
   theme_cowplot(12) + theme(legend.position="bottom") + scale_x_log10()
 
   countglen_p
-  ggsave(file.path(statsplotdir,"genecount_gene_length_chytrid.pdf"),countglen_p,width=8,height=8)
+  ggsave(file.path(statsplotdir,"1kfg_genecount_aa_length_chytrid.pdf"),countglen_p,width=8,height=8)
 
 asco <- asmstat_res %>% filter(PHYLUM=="Ascomycota") %>% filter(SUBPHYLUM != "Ascomycotina" & 
                                                                   SUBPHYLUM != "NA") 
@@ -182,12 +237,12 @@ for (subphylum in unique(asco$SUBPHYLUM))
     geom_smooth(method = "lm", se = FALSE,color="black",formula = y ~ x) + 
     scale_colour_manual(values = mycolors) +
     scale_fill_manual(values = mycolors) +
-    ylab("Gene Length") +
-    xlab("Gene count (Mb)") + ggtitle(sprintf("%s: Gene Count vs Mean Gene length",subphylum)) +
+    ylab("Protein Length") +
+    xlab("Gene count (Mb)") + ggtitle(sprintf("%s: Gene Count vs Mean Protein length",subphylum)) +
     theme_cowplot(12) + theme(legend.position="bottom") + scale_x_log10()
   
   countglen_p
-  ggsave(file.path(statsplotdir,sprintf("genecount_gene_length_asco_%s.pdf",subphylum)),countglen_p,width=8,height=8)
+  ggsave(file.path(statsplotdir,sprintf("1kfg_genecount_aa_length_asco_%s.pdf",subphylum)),countglen_p,width=8,height=8)
 }
 
 
@@ -237,7 +292,7 @@ aa_pcaplot<- autoplot(aa_pca_res, data = aafreq_wide, colour = 'PHYLUM', alpha=0
   scale_colour_manual(values = mycolors) +
   scale_fill_manual(values = mycolors)
 aa_pcaplot
-ggsave(file.path(statsplotdir,"PCA_aa_freq_all.pdf"),aa_pcaplot,width=14,height=14)
+ggsave(file.path(statsplotdir,"1kfg_PCA_aa_freq_all.pdf"),aa_pcaplot,width=14,height=14)
 
 
 aa_pcafactors <- as_tibble(rownames_to_column(data.frame(aa_pca_res$x),var="LOCUSTAG"))
@@ -259,7 +314,7 @@ aa_GC_plot <- ggplot(aa_pca_factors,aes(x=GC_PERCENT,y=PC1)) + geom_point(aes(co
                 " p-value =",signif(summary(fit)$coef[2,4], 5))) +
   theme(legend.position="bottom") 
 aa_GC_plot
-ggsave(file.path(statsplotdir,"PCA_AA_freq_PC1_GC.pdf"),aa_GC_plot,width=14,height=14)
+ggsave(file.path(statsplotdir,"1kfg_PCA_AA_freq_PC1_GC.pdf"),aa_GC_plot,width=14,height=14)
 
 aa_pca_factors$SUBPHYLUM <- factor(aa_pca_factors$SUBPHYLUM)
 aa_pca_factors$PHYLUM <- factor(aa_pca_factors$PHYLUM)
@@ -273,7 +328,7 @@ aa_GC_plot_f <- ggplot(aa_pca_factors,aes(x=GC_PERCENT,y=PC1)) + geom_point(aes(
   ggtitle("GC % vs AA Freq PC1") +
   theme(legend.position="bottom")  + facet_wrap(~PHYLUM )
 aa_GC_plot_f
-ggsave(file.path(statsplotdir,"PCA_AA_freq_PC1_GC_facet.pdf"),aa_GC_plot_f,width=14,height=14)
+ggsave(file.path(statsplotdir,"1kfg_PCA_AA_freq_PC1_GC_facet.pdf"),aa_GC_plot_f,width=14,height=14)
 # CODON FREQ
 
 codonfreq_wide <- codonfreq_res %>% select(c(PHYLUM,SUBPHYLUM,CLASS,GENUS,SPECIES,GC_PERCENT,TOTAL_LENGTH,LOCUSTAG,codon, frequency)) %>% 
@@ -296,7 +351,7 @@ codon_pcaplot<- autoplot(codon_pca_res, data = codonfreq_wide,
   scale_fill_manual(values = mycolors) 
   
 codon_pcaplot
-ggsave(file.path(statsplotdir,"PCA_codon_freq_all.pdf"),codon_pcaplot,width=14,height=14)
+ggsave(file.path(statsplotdir,"1kfg_PCA_codon_freq_all.pdf"),codon_pcaplot,width=14,height=14)
 
 codon_pcafactors <- as_tibble(rownames_to_column(data.frame(codon_pca_res$x),var="LOCUSTAG"))
 
@@ -323,7 +378,7 @@ codon_GC_plot <- ggplot(codon_pca_factors,aes(x=GC_PERCENT,y=PC1)) +
   theme(legend.position="bottom") 
   
 codon_GC_plot
-ggsave(file.path(statsplotdir,"PCA_codon_freq_PC1_GC.pdf"),codon_GC_plot,width=14,height=14)
+ggsave(file.path(statsplotdir,"1kfg_PCA_codon_freq_PC1_GC.pdf"),codon_GC_plot,width=14,height=14)
 
 
 codon_GC_plot_f <- ggplot(codon_pca_factors,aes(x=GC_PERCENT,y=PC1)) + geom_point(aes(color=SUBPHYLUM)) + 
@@ -334,7 +389,7 @@ codon_GC_plot_f <- ggplot(codon_pca_factors,aes(x=GC_PERCENT,y=PC1)) + geom_poin
   ggtitle("GC % vs Codon Freq PC1") +
   theme(legend.position="bottom")  + facet_wrap(~PHYLUM )
 codon_GC_plot_f
-ggsave(file.path(statsplotdir,"PCA_codon_freq_PC1_GC_facet.pdf"),codon_GC_plot_f,width=14,height=14)
+ggsave(file.path(statsplotdir,"1kfg_PCA_codon_freq_PC1_GC_facet.pdf"),codon_GC_plot_f,width=14,height=14)
 
 
 # plot tRNA codon abundance vs codon usage
@@ -378,7 +433,7 @@ trnacodonabun_p <- ggplot(trna_codon_freq %>% arrange(trna_codon, PHYLUM, SUBPHY
 
 trnacodonabun_p
 
-ggsave(file.path(statsplotdir,"tRNA_abundance_codon_frequency.pdf"),trnacodonabun_p,width=20,height=20)
+ggsave(file.path(statsplotdir,"1kfg_tRNA_abundance_codon_frequency.pdf"),trnacodonabun_p,width=20,height=20)
 
 for (phylum in unique(trna_codon_freq$PHYLUM)) {
   i_trnacodonabun_p <- ggplot(trna_codon_freq %>% filter(PHYLUM==phylum) %>% filter(! is.na(frequency)),
@@ -388,7 +443,7 @@ for (phylum in unique(trna_codon_freq$PHYLUM)) {
   scale_fill_manual(values = mycolors) + ylab("codon abundance") + xlab("relative tRNA abundance") + 
   ggtitle(sprintf("%s tRNA abundance plot",phylum))
   
-  ggsave(file.path(statsplotdir,sprintf("tRNA_abundance_codon_frequency_%s.pdf",phylum)),i_trnacodonabun_p,width=20,height=20)
+  ggsave(file.path(statsplotdir,sprintf("1kfg_tRNA_abundance_codon_frequency_%s.pdf",phylum)),i_trnacodonabun_p,width=20,height=20)
 }
 
 # closeup shop

@@ -38,13 +38,13 @@ speciesinfo <- dbGetQuery(con, speciessql)
 cazymerops_sql="
 SELECT s.LOCUSTAG, m.merops_count, c.cazy_count, m.merops_count/c.cazy_count as MERCAZ_ratio, PHYLUM, SUBPHYLUM, CLASS, s.ORDER, GENUS, s.SPECIES, s.STRAIN,
 FROM species s,
-(SELECT species_prefix, COUNT(*) as merops_count,
-FROM (SELECT DISTINCT species_prefix, protein_id FROM merops) as m
-GROUP BY m.species_prefix) as m,
-(SELECT species_prefix, COUNT(*) as cazy_count,
-FROM (SELECT DISTINCT species_prefix, protein_id FROM cazy) as c
-GROUP BY c.species_prefix) as c
-WHERE m.species_prefix = s.LOCUSTAG and c.species_prefix = s.LOCUSTAG"
+(SELECT LOCUSTAG, COUNT(*) as merops_count,
+FROM (SELECT DISTINCT LOCUSTAG, protein_id FROM merops, gene_info WHERE gene_info.gene_id = merops.protein_id) as m
+GROUP BY m.LOCUSTAG) as m,
+(SELECT LOCUSTAG, COUNT(*) as cazy_count,
+FROM (SELECT DISTINCT LOCUSTAG, protein_id FROM cazy, gene_info WHERE gene_info.gene_id = cazy.protein_id ) as c
+GROUP BY c.LOCUSTAG) as c
+WHERE m.LOCUSTAG = s.LOCUSTAG and c.LOCUSTAG = s.LOCUSTAG"
 cazymerops <- dbGetQuery(con, cazymerops_sql)
 
 head(cazymerops)
@@ -65,8 +65,8 @@ CM_subphylum$PHYLUM = factor(CM_subphylum$PHYLUM)
 CM_subphylum$SUBPHYLUM = factor(CM_subphylum$SUBPHYLUM,
                                         levels = as.character(CM_subphylum$SUBPHYLUM)[order(CM_subphylum$PHYLUM)])
 # Define the number of colors you want
-nb.cols <- 9
-mycolors <- colorRampPalette(brewer.pal(8, "Set1"))(nb.cols)
+nb.cols <- length(unique(CM_subphylum$SUBPHYLUM))
+mycolors <- colorRampPalette(brewer.pal(9, "Set1"))(nb.cols)
 
 p <- ggplot() + geom_bar(data=CM_subphylum,
                          aes(y=cm_mean,
@@ -93,19 +93,26 @@ p <- ggplot() + geom_bar(data=CM_subphylum,
 #p
 ggsave("plots/MEROPS_CAZY_profile.pdf",p,width=10,height=8)
 
+# only take merops when they also have a signalp domain that has probability > 0.80
+
 cazymeropssecreted_sql="
 SELECT s.LOCUSTAG, m.merops_count, c.cazy_count, m.merops_count/c.cazy_count as MERCAZ_ratio,
-PHYLUM, SUBPHYLUM, CLASS, s.ORDER, GENUS, s.SPECIES, s.STRAIN,
+s.PHYLUM, s.SUBPHYLUM, s.CLASS, s.ORDER, s.GENUS, s.SPECIES, s.STRAIN
 FROM species s,
-(SELECT m.species_prefix, COUNT(*) as merops_count
-FROM (SELECT DISTINCT species_prefix, protein_id FROM merops) as m, signalp sp
-WHERE sp.protein_id = m.protein_id
-GROUP BY (m.species_prefix,sp.species_prefix)) as m,
-(SELECT sp.species_prefix, COUNT(*) as cazy_count
-FROM (SELECT DISTINCT species_prefix, protein_id FROM cazy) as c, signalp sp
-WHERE sp.protein_id = c.protein_id
-GROUP BY (c.species_prefix,sp.species_prefix)) as c
-WHERE m.species_prefix = s.LOCUSTAG and c.species_prefix = s.LOCUSTAG"
+(SELECT LOCUSTAG, COUNT(*) as merops_count
+ FROM (SELECT LOCUSTAG, merops.protein_id 
+       FROM merops, signalp, gene_info 
+       WHERE gene_info.gene_id = merops.protein_id AND 
+             signalp.protein_id = merops.protein_id AND signalp.probability > 0.80) as m
+ GROUP BY LOCUSTAG) as m,
+(SELECT LOCUSTAG, COUNT(*) as cazy_count 
+ FROM (SELECT LOCUSTAG, cazy.protein_id 
+       FROM cazy, signalp, gene_info 
+       WHERE gene_info.gene_id = cazy.protein_id AND 
+             signalp.protein_id = cazy.protein_id AND signalp.probability > 0.80) as c
+GROUP BY LOCUSTAG) as c
+WHERE m.LOCUSTAG = s.LOCUSTAG and c.LOCUSTAG = s.LOCUSTAG"
+
 cazymeropssecreted <- dbGetQuery(con, cazymeropssecreted_sql)
 head(cazymeropssecreted)
 
