@@ -185,10 +185,17 @@ p
 
 digestivequery_sql = 
 "
-SELECT ssp.LOCUSTAG, ssp.secreted_count, de.de_count, merops.merops_count, funguild.trophicMode, species.PHYLUM, species.SUBPHYLUM, species.SPECIES, genes.gene_count,
+SELECT ssp.LOCUSTAG, ssp.ssp_count, secreted.secreted_count, de.de_count, merops.merops_count, funguild.trophicMode, species.PHYLUM, species.SUBPHYLUM, species.SPECIES, genes.gene_count,
        asm_stats.TOTAL_LENGTH
 FROM 
+
 (SELECT gene_info.LOCUSTAG, COUNT(DISTINCT gene_info.gene_id) AS secreted_count
+FROM signalp, gene_info, gene_proteins
+WHERE signalp.protein_id = gene_info.gene_id AND gene_proteins.gene_id = gene_info.gene_id AND
+signalp.probability > 0.60 AND signalp.protein_id not in (select cazy.protein_id FROM cazy where cazy.coverage > 0.50 AND cazy.evalue < 1e-5 AND cazy.HMM_id NOT LIKE 'GT%' AND cazy.HMM_id NOT LIKE 'fungi_doc%')
+GROUP BY LOCUSTAG) as secreted,
+
+(SELECT gene_info.LOCUSTAG, COUNT(DISTINCT gene_info.gene_id) AS ssp_count
 FROM signalp, gene_info, gene_proteins
 WHERE signalp.protein_id = gene_info.gene_id AND gene_proteins.gene_id = gene_info.gene_id AND
 signalp.probability > 0.60 AND gene_proteins.length < 300 
@@ -215,7 +222,7 @@ funguild, species, asm_stats
 
 WHERE ssp.LOCUSTAG = de.LOCUSTAG AND ssp.LOCUSTAG = merops.LOCUSTAG AND 
 ssp.LOCUSTAG = funguild.species_prefix AND species.LOCUSTAG = ssp.LOCUSTAG AND
-genes.LOCUSTAG = ssp.LOCUSTAG AND asm_stats.LOCUSTAG = genes.LOCUSTAG
+genes.LOCUSTAG = ssp.LOCUSTAG AND asm_stats.LOCUSTAG = genes.LOCUSTAG and secreted.LOCUSTAG = ssp.LOCUSTAG
 "
 
 
@@ -229,8 +236,8 @@ nb.cols <- length(unique(zygoonly$SUBPHYLUM))
 mycolors <- colorRampPalette(brewer.pal(9, "Set1"))(nb.cols)
 
 
-p <- ggplot(zygoonly) + geom_point(aes(x=de_count / (gene_count - de_count),
-                                         y=secreted_count / (gene_count - secreted_count),
+p <- ggplot(zygoonly) + geom_point(aes(x=log(de_count / (secreted_count - de_count))/log(10),
+                                         y=log(ssp_count / (secreted_count - ssp_count))/log(10),
                                          fill=SUBPHYLUM,
                                          color=SUBPHYLUM,
                                          size=gene_count,
@@ -249,8 +256,8 @@ ggsave("plots/1kfg_zygo_SSP_vs_DE_gene_count.pdf",p,width=10,height=8)
 nb.cols <- length(unique(digestive$PHYLUM))
 mycolors <- colorRampPalette(brewer.pal(9, "Set1"))(nb.cols)
 
-p <- ggplot(digestive) + geom_point(aes(x=de_count / (gene_count - de_count),
-                                        y=secreted_count / (gene_count - secreted_count),
+p <- ggplot(digestive) + geom_point(aes(x=log(de_count / (secreted_count - de_count))/log(10),
+                                        y=log(ssp_count / (secreted_count - ssp_count))/log(10),
                                         fill=PHYLUM,
                                         color=PHYLUM,
                                         size=gene_count,
